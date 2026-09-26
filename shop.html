@@ -47,7 +47,7 @@ const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'}
 function unit(q){return q===40?129.90/40:(tiers.find(t=>q<=t.max)||tiers[0]).price}
 function total(q){return q===40?129.90:q*unit(q)}
 function get(){try{return JSON.parse(localStorage.getItem('jaldorxCart')||'{}')||{}}catch(e){return {}}}
-function save(c){localStorage.setItem('jaldorxCart',JSON.stringify(c));updateCounts()}
+function save(c){localStorage.setItem('jaldorxCart',JSON.stringify(c));localStorage.setItem('jaldorxCartQty',String(c.mystery?.qty||0));updateCounts()}
 function updateCounts(){const c=get(),q=Number(c.mystery?.qty||0);document.querySelectorAll('.cart-count').forEach(e=>e.textContent=q)}
 const qty=document.getElementById('qty'),warning=document.getElementById('warning'),box=document.getElementById('discountBox');
 function render(){let q=parseInt(qty.value,10)||0;q=Math.max(1,Math.min(MAX,q));qty.value=q;warning.textContent='';document.getElementById('unitPrice').textContent=euro(unit(q))+' / Stück';const normal=q*BASE,save=normal-total(q);box.innerHTML=q===40?'<strong>40 Stück: 129,90 € gesamt</strong><br><span class="muted">Maximaler Online-Rabatt erreicht.</span>':`Mengenpreis: <strong>${euro(unit(q))}</strong> pro Stück${save>0?`<br><span class="muted">Du sparst ${euro(save)} gegenüber dem Einzelpreis.</span>`:''}`}

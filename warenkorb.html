@@ -56,5 +56,5 @@ document.getElementById('q').oninput=e=>{let n=parseInt(e.target.value.replace(/
 document.getElementById('remove').onclick=()=>{save({});render()};document.getElementById('clear').onclick=()=>{save({});render()};
 }
 function setQty(n,silent=false){n=Math.max(1,Math.min(MAX,n));if(n>=MAX&&!silent){}save({mystery:{qty:n}});render()}
-document.addEventListener('DOMContentLoaded',render);
+document.addEventListener('DOMContentLoaded',render);window.addEventListener('pageshow',render);window.addEventListener('storage',e=>{if(e.key==='jaldorxCart'||e.key===null)render()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
 </script></body></html>

@@ -44,7 +44,7 @@ body{margin:0;background:#050505 url("data:image/webp;base64,UklGRqwuAgBXRUJQVlA
 const MAX=40,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}];
 function shipping(q,sub){if(sub>=99)return 0;return q<=10?3.49:5.99}
 const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
-const get=()=>{try{return JSON.parse(localStorage.getItem('jaldorxCart')||'{}')||{}}catch(e){return {}}};
+const get=()=>{try{const raw=localStorage.getItem('jaldorxCart');const c=raw?JSON.parse(raw):{};if(c&&c.mystery&&Number(c.mystery.qty)>0)return c;const q=Number(localStorage.getItem('jaldorxCartQty')||0);return q>0?{mystery:{qty:q}}:{};}catch(e){const q=Number(localStorage.getItem('jaldorxCartQty')||0);return q>0?{mystery:{qty:q}}:{}}};
 const save=c=>{localStorage.setItem('jaldorxCart',JSON.stringify(c));localStorage.setItem('jaldorxCartQty',String(c.mystery?.qty||0))};
 const unit=q=>q===40?129.90/40:(tiers.find(t=>q<=t.max)||tiers[0]).price;
 const total=q=>q===40?129.90:q*unit(q);

@@ -94,6 +94,18 @@ main{padding-top:110px!important}
 /* Safari/iPad: dynamische Warenkorb-Steuerung immer touchbar */
 .cart-actions button,.cart-actions input,.cart-buttons button,.cart-buttons a{pointer-events:auto;touch-action:manipulation}
 .jdx-ship-banner{pointer-events:none!important}
+</style><style id="jaldorx-ios-touch-layer-fix">
+/* iOS Safari: shipping bar stays in document flow to avoid blocking touch layers */
+.jdx-ship-banner{
+  position:sticky!important;
+  top:0!important;
+  z-index:40!important;
+  pointer-events:none!important;
+}
+main{padding-top:0!important}
+@media(max-width:760px){
+  main{padding-top:0!important}
+}
 </style></head>
 <body><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header>
 <main><div class="wrap page"><div class="page-head"><div class="kicker">DEIN WARENKORB</div><h1>WARENKORB.</h1></div><div id="cart"></div></div></main>

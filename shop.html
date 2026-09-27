@@ -114,6 +114,218 @@ main{padding-top:0!important}
 @media(max-width:760px){
   main{padding-top:0!important}
 }
+</style><style id="jaldorx-home-footer-polish">
+/* JALDORX Footer – klare Struktur auf Desktop, iPad und Smartphone */
+.jdx-footer-grid{
+  display:grid;
+  grid-template-columns:1.25fr .8fr 1.15fr 1.65fr;
+  gap:42px;
+  padding:56px 0 20px;
+  align-items:start;
+}
+.jdx-footer-brand strong{
+  display:block;
+  font-size:26px;
+  line-height:1;
+  color:#fff;
+  letter-spacing:-.03em;
+}
+.jdx-footer-brand span{
+  display:block;
+  margin-top:12px;
+  color:#777;
+  font-size:12px;
+  letter-spacing:.02em;
+}
+.jdx-footer-social strong,
+.jdx-footer-pay strong,
+.jdx-footer-links>strong{
+  display:block;
+  color:#aaa;
+  font-size:11px;
+  letter-spacing:.14em;
+  font-weight:900;
+}
+.jdx-socials{
+  display:flex;
+  gap:9px;
+  margin-top:14px;
+}
+.jdx-social{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid #ffffff22;
+  border-radius:11px;
+  background:#0b0b0b;
+  color:#fff;
+  font-size:18px;
+}
+.jdx-social-disabled,.jdx-disabled{opacity:.42}
+.jdx-footer-social small{
+  display:block;
+  margin-top:10px;
+  color:#666;
+  font-size:11px;
+}
+.jdx-payicons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+}
+.jdx-payicons span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  height:34px;
+  padding:0 10px;
+  border:1px solid #ffffff20;
+  border-radius:8px;
+  background:#0b0b0b;
+  color:#bbb;
+  font-size:11px;
+  font-weight:900;
+}
+.jdx-footer-links .footlinks{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  column-gap:22px;
+  row-gap:11px;
+  margin-top:14px;
+}
+.jdx-footer-links a{
+  color:#999;
+  font-size:13px;
+  line-height:1.35;
+}
+.jdx-footer-links a:hover{color:#fff}
+.jdx-footer-note{
+  grid-column:1/-1;
+  border-top:1px solid #ffffff12;
+  padding-top:18px;
+  color:#666;
+  font-size:11px;
+  line-height:1.5;
+}
+.jdx-footer-copy{
+  grid-column:1/-1;
+  margin-top:-8px;
+  color:#555;
+  font-size:11px;
+}
+@media(min-width:761px) and (max-width:1050px){
+  .jdx-footer-grid{
+    grid-template-columns:1.2fr .9fr 1.3fr;
+    gap:30px;
+    padding:46px 0 18px;
+  }
+  .jdx-footer-links{grid-column:1/-1}
+  .jdx-footer-links .footlinks{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+}
+@media(max-width:760px){
+  .jdx-footer-grid{
+    grid-template-columns:1fr 1fr;
+    gap:30px 22px;
+    padding:42px 0 18px;
+  }
+  .jdx-footer-brand,.jdx-footer-note,.jdx-footer-copy{grid-column:1/-1}
+  .jdx-footer-links{grid-column:1/-1}
+  .jdx-footer-links .footlinks{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    column-gap:18px;
+  }
+}
+@media(max-width:480px){
+  .jdx-footer-grid{grid-template-columns:1fr;gap:25px}
+  .jdx-footer-brand,.jdx-footer-social,.jdx-footer-pay,.jdx-footer-links,
+  .jdx-footer-note,.jdx-footer-copy{grid-column:1}
+  .jdx-footer-links .footlinks{grid-template-columns:1fr 1fr}
+}
+</style><style id="jaldorx-footer-spacing-final">
+/* Letzter Feinschliff: Footer etwas kompakter */
+.insider.block{padding-bottom:70px}
+.footer{padding-top:0}
+@media(max-width:760px){
+  .insider.block{padding-bottom:52px}
+}
+</style><style id="jaldorx-footer-payment-social-polish">
+.jdx-footer-social,.jdx-footer-pay{min-width:0}
+.jdx-socials{display:flex;gap:10px;margin-top:14px}
+.jdx-social{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
+.jdx-social svg{width:22px;height:22px;display:block}
+.jdx-payicons{
+  display:grid;
+  grid-template-columns:repeat(3,76px);
+  gap:8px;
+  margin-top:14px;
+  justify-content:start;
+}
+.jdx-payicons span{
+  min-width:0!important;
+  width:76px;
+  height:38px;
+  padding:0 6px!important;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  border:1px solid #ffffff20;
+  border-radius:9px;
+  background:#0b0b0b;
+  color:#bdbdbd;
+  font-size:11px;
+  font-weight:900;
+}
+.jdx-payicons .pay-paypal{color:#d6d6d6}
+.jdx-payicons .pay-visa{font-style:italic;letter-spacing:.03em}
+.jdx-payicons .pay-mc{letter-spacing:.06em}
+.jdx-payicons .pay-apple{font-size:12px}
+.jdx-payicons .pay-google{font-size:11px}
+.jdx-payicons .pay-klarna{font-size:11px}
+@media(max-width:1050px) and (min-width:761px){
+  .jdx-payicons{grid-template-columns:repeat(3,72px);gap:7px}
+  .jdx-payicons span{width:72px}
+}
+@media(max-width:480px){
+  .jdx-payicons{grid-template-columns:repeat(3,76px)}
+}
+</style><style id="jaldorx-footer-payment-colors">
+.jdx-social:nth-child(1){color:#e1306c}
+.jdx-social:nth-child(2){color:#25f4ee}
+
+.jdx-payicons span{gap:6px}
+.jdx-payicons .pay-paypal{color:#0070ba}
+.jdx-payicons .pay-visa{color:#1a73e8}
+.jdx-payicons .pay-mc{color:#eee;font-size:9px}
+.jdx-payicons .pay-apple{color:#f5f5f5}
+.jdx-payicons .pay-google{color:#f5f5f5}
+.jdx-payicons .pay-klarna{color:#ff6fc7}
+.pay-icon{font-size:15px;font-weight:950;line-height:1}
+.google-icon{font-size:16px;font-weight:950;color:#4285f4}
+.mc-icon{position:relative;width:27px;height:17px;display:inline-block;flex:0 0 27px}
+.mc-icon i{position:absolute;top:1px;width:15px;height:15px;border-radius:50%;display:block}
+.mc-icon i:first-child{left:1px;background:#eb001b}
+.mc-icon i:last-child{right:1px;background:#f79e1b;mix-blend-mode:screen}
+@media(max-width:480px){
+  .jdx-payicons span{font-size:10px}
+}
+</style><style id="jaldorx-footer-clean-icons">
+.jdx-social svg{filter:none!important;display:block;width:24px;height:24px}
+.jdx-social:nth-child(1){color:#e1306c}
+.jdx-social:nth-child(2){color:#25f4ee}
+.jdx-payicons{grid-template-columns:repeat(3,76px)}
+.jdx-payicons .pay-paypal{color:#0070ba}
+.jdx-payicons .pay-visa{color:#1a73e8}
+.jdx-payicons .pay-mc{color:#fff}
+.jdx-payicons .pay-apple{color:#fff}
+.jdx-payicons .pay-google{color:#fff}
+.jdx-payicons .pay-mc .mc-icon{margin:0}
+@media(max-width:480px){.jdx-payicons{grid-template-columns:repeat(3,76px)}}
 </style></head>
 <body><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header>
 <main><div class="wrap page"><div class="page-head"><div class="kicker">JALDORX SHOP</div><h1>MYSTERY<br><span>DUFTBAUM</span></h1><p>Ein Duft. Deine Überraschung. Gut oder eklig?</p></div>
@@ -124,8 +336,17 @@ main{padding-top:0!important}
 <div class="mini-cart" id="mini"><h3>Im Warenkorb</h3><div id="miniText"></div><div class="mini-actions"><a class="btn primary" href="warenkorb.html">WARENKORB ANSEHEN / BEARBEITEN</a><button class="btn secondary" id="continue">WEITER SHOPPEN</button></div></div>
 <footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
-<div class="jdx-footer-social"><strong>SOCIAL</strong><div class="jdx-socials"><span class="jdx-social jdx-disabled" title="Instagram – folgt" aria-label="Instagram – folgt">◎</span><span class="jdx-social jdx-disabled" title="TikTok – folgt" aria-label="TikTok – folgt">♪</span></div><small>Instagram &amp; TikTok folgen.</small></div>
-<div class="jdx-footer-pay"><strong>GEPLANTE ZAHLUNGSARTEN</strong><div class="jdx-payicons"><span>PayPal</span><span>VISA</span><span>MC</span><span> Pay</span><span>G Pay</span><span>Klarna</span></div></div>
+<div class="jdx-footer-social"><strong>SOCIAL</strong><div class="jdx-socials">
+<span class="jdx-social jdx-disabled" title="Instagram – folgt" aria-label="Instagram – folgt">
+<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.7" r="1.2" fill="currentColor"/></svg>
+</span>
+<span class="jdx-social jdx-disabled" title="TikTok – folgt" aria-label="TikTok – folgt">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.2 4c.5 2.1 1.8 3.4 3.8 3.8v3.1c-1.4-.1-2.7-.6-3.8-1.3v5.5a5.9 5.9 0 1 1-5.9-5.9c.4 0 .8 0 1.2.1v3.2a2.8 2.8 0 1 0 1.6 2.6V4h3.1Z" fill="currentColor"/></svg>
+</span>
+</div><small>Instagram &amp; TikTok folgen.</small></div>
+<div class="jdx-footer-pay"><strong>GEPLANTE ZAHLUNGSARTEN</strong><div class="jdx-payicons">
+<span class="pay-paypal">PayPal</span><span class="pay-visa"><b class="pay-icon">VISA</b></span><span class="pay-mc"><b class="mc-icon"><i></i><i></i></b></span><span class="pay-apple"><b class="pay-icon"></b> Pay</span><span class="pay-google"><b class="google-icon">G</b> Pay</span>
+</div></div>
 <div class="jdx-footer-links"><strong>SERVICE &amp; INFOS</strong><div class="footlinks"><a href="info.html">Info</a><a href="kontakt.html">Kontakt</a><a href="versand-zahlung.html">Versand &amp; Zahlung</a><a href="widerruf.html">Widerrufsrecht</a><a href="agb.html">AGB</a><a href="datenschutz.html">Datenschutz</a><a href="impressum.html">Impressum</a></div></div>
 <div class="jdx-footer-note">Die Zahlungsarten, Social-Media-Profile und rechtlichen Inhalte werden vor dem Livegang final eingerichtet.</div>
 <div class="jdx-footer-copy">© 2026 JALDORX · Planungsversion</div>

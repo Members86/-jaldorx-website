@@ -352,6 +352,7 @@ const discountText=saveAmt>0?'Mengenrabatt: − '+euro(saveAmt)+' · ':'';
 const shippingText=free?'✓ Versand kostenlos ab 99 €':'Noch '+euro(99-sub)+' bis zum kostenlosen Versand ab 99 € · Versand: '+euro(ship);
 el.innerHTML='<div class="cart-box"><div class="cart-line"><div><strong>Mystery Duftbaum</strong><div class="muted">'+euro(unit(q))+' pro Stück</div></div><div class="cart-actions"><button class="small-btn" id="minus">−</button><input class="qty-input" id="q" value="'+q+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button class="small-btn" id="plus">+</button></div><div><strong>'+euro(sub)+'</strong><br><button class="small-btn remove" id="remove">ENTFERNEN</button></div></div><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div><p class="muted">'+discountText+shippingText+'</p><div class="cart-buttons"><button class="small-btn" id="clear">WARENKORB LEEREN</button><a class="btn secondary" href="shop.html">WEITER SHOPPEN</a><a class="btn primary" href="checkout.html">ZUR KASSE</a></div></div>';
 bindCartControls();
+}
 function bindCartControls(){
   const minus=document.getElementById('minus'), plus=document.getElementById('plus'), remove=document.getElementById('remove'), clear=document.getElementById('clear'), input=document.getElementById('q');
   if(minus) minus.onclick=()=>setQty(qtyFromDom()-1);

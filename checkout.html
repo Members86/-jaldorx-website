@@ -309,8 +309,33 @@ main{padding-top:0!important}
 .jdx-payicons .pay-google{color:#fff}
 .jdx-payicons .pay-mc .mc-icon{margin:0}
 @media(max-width:480px){.jdx-payicons{grid-template-columns:repeat(3,76px)}}
+</style><style id="jaldorx-stable-layout-v2">
+/* Stable iPad/Safari layout: no fixed shipping layer over page content */
+header{position:sticky!important;top:0!important;z-index:100!important}
+.jdx-ship-banner{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  z-index:10!important;
+  width:100%!important;
+  pointer-events:none!important;
+  box-sizing:border-box!important;
+}
+main{padding-top:0!important}
+.jdx-ship-banner + main{padding-top:0!important}
+.cart-actions,.cart-actions button,.small-btn,.qty-input{
+  touch-action:manipulation!important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+.cart-actions,.cart-actions button,.small-btn,.qty-input{pointer-events:auto!important}
+@media(max-width:760px){
+  main{padding-top:0!important}
+  .jdx-ship-banner{position:relative!important;top:auto!important}
+}
 </style></head>
-<body><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header>
+<body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div>
 <main><div class="wrap page"><div class="page-head"><div class="kicker">CHECKOUT</div><h1>DEINE<br><span>BESTELLUNG.</span></h1></div><div id="checkout-content"><div class="checkout-grid">
 <section class="card"><h2>Lieferadresse</h2><form id="checkout-form"><div class="fields">
 <div class="field"><label>Vorname *<input required autocomplete="given-name"></label></div><div class="field"><label>Nachname *<input required autocomplete="family-name"></label></div>

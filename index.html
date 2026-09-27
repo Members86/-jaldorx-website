@@ -32,7 +32,139 @@ section.block{padding:105px 0;border-top:1px solid #ffffff12}.grid2{display:grid
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.info-card{background:#0b0b0b;border:1px solid #ffffff18;border-radius:20px;padding:25px}.info-card p,.info-card li{color:#aaa;line-height:1.65}.info-card h2{font-size:21px;margin:0 0 13px}.accent{color:var(--cyan)!important;font-weight:800}.gold-text{color:var(--gold)!important;font-weight:800}
 .legal-page{padding:70px 0 100px;min-height:calc(100vh - 68px)}.legal-box{border:1px solid #ffffff18;border-radius:18px;background:#0b0b0b;padding:30px;max-width:850px}.legal-page p,.legal-page li{color:#bbb;font-size:17px;line-height:1.7}.legal-page h1{margin-top:10px}
 @media(max-width:760px){.wrap{width:min(100% - 28px,560px)}.nav{height:62px}.navlinks a:not(.cart-link){display:none}.hero{min-height:auto;padding:70px 0}.hero-grid,.grid2,.steps,.shop-layout,.checkout-grid,.info-grid{grid-template-columns:1fr}.hero-grid{gap:30px}h1{font-size:58px}.hero p,.lead{font-size:17px}.product{height:410px}.pouch{width:205px;height:305px}.insiderbox{flex-direction:column;align-items:stretch}.insider form{flex-direction:column}.insider input{width:100%}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.cart-line{grid-template-columns:1fr}.cart-actions{justify-content:flex-start}.footrow{flex-direction:column}}
-.socials{display:flex;align-items:center;gap:12px}.social{width:42px;height:42px;display:grid;place-items:center;border:1px solid #ffffff22;border-radius:12px;background:#0b0b0b;color:#fff}.social svg{width:21px;height:21px;fill:currentColor}.social.placeholder{opacity:.95}.payicons{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:22px 0}.payicon{min-width:72px;height:38px;padding:0 12px;display:grid;place-items:center;border:1px solid #ffffff20;border-radius:8px;background:#111;color:#fff;font-size:12px;font-weight:900;letter-spacing:.02em}.payicon.paypal{color:#79a9ff}.payicon.apple{font-size:13px}.payicon.visa{color:#6ea8ff}.payicon.mc{color:#ff8a7a}.payicon.klarna{color:#ff7ee8}.footer-main{display:grid;gap:20px;text-align:center}.footer-brand{font-size:22px;font-weight:900}.footer-socials{display:flex;justify-content:center;gap:12px}.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 18px}.footer-links a,.footer-links span{color:#aaa}.footer-links a:hover{color:#fff}.footer-links .pending{opacity:.65}.footer-copy{color:#777;font-size:12px;line-height:1.6}.footer-note{color:#777;font-size:12px;line-height:1.6;max-width:700px;margin:auto}@media(max-width:760px){.payicons{gap:7px}.payicon{min-width:66px;height:36px;padding:0 9px}.footer-links{gap:10px 14px}}</style><style id="jaldorx-final-background">html{background:#050505!important}body{background-color:#050505!important;background-image:url("mystery-background.jpg")!important;background-size:100% auto!important;background-position:center top!important;background-repeat:no-repeat!important;background-attachment:fixed!important}main{background-image:none!important;background-color:transparent!important}</style></head>
+.socials{display:flex;align-items:center;gap:12px}.social{width:42px;height:42px;display:grid;place-items:center;border:1px solid #ffffff22;border-radius:12px;background:#0b0b0b;color:#fff}.social svg{width:21px;height:21px;fill:currentColor}.social.placeholder{opacity:.95}.payicons{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:22px 0}.payicon{min-width:72px;height:38px;padding:0 12px;display:grid;place-items:center;border:1px solid #ffffff20;border-radius:8px;background:#111;color:#fff;font-size:12px;font-weight:900;letter-spacing:.02em}.payicon.paypal{color:#79a9ff}.payicon.apple{font-size:13px}.payicon.visa{color:#6ea8ff}.payicon.mc{color:#ff8a7a}.payicon.klarna{color:#ff7ee8}.footer-main{display:grid;gap:20px;text-align:center}.footer-brand{font-size:22px;font-weight:900}.footer-socials{display:flex;justify-content:center;gap:12px}.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 18px}.footer-links a,.footer-links span{color:#aaa}.footer-links a:hover{color:#fff}.footer-links .pending{opacity:.65}.footer-copy{color:#777;font-size:12px;line-height:1.6}.footer-note{color:#777;font-size:12px;line-height:1.6;max-width:700px;margin:auto}@media(max-width:760px){.payicons{gap:7px}.payicon{min-width:66px;height:36px;padding:0 9px}.footer-links{gap:10px 14px}}</style><style id="jaldorx-final-background">html{background:#050505!important}body{background-color:#050505!important;background-image:url("mystery-background.jpg")!important;background-size:100% auto!important;background-position:center top!important;background-repeat:no-repeat!important;background-attachment:fixed!important}main{background-image:none!important;background-color:transparent!important}</style><style id="jaldorx-home-footer-polish">
+/* JALDORX Footer – klare Struktur auf Desktop, iPad und Smartphone */
+.jdx-footer-grid{
+  display:grid;
+  grid-template-columns:1.25fr .8fr 1.15fr 1.65fr;
+  gap:42px;
+  padding:56px 0 20px;
+  align-items:start;
+}
+.jdx-footer-brand strong{
+  display:block;
+  font-size:26px;
+  line-height:1;
+  color:#fff;
+  letter-spacing:-.03em;
+}
+.jdx-footer-brand span{
+  display:block;
+  margin-top:12px;
+  color:#777;
+  font-size:12px;
+  letter-spacing:.02em;
+}
+.jdx-footer-social strong,
+.jdx-footer-pay strong,
+.jdx-footer-links>strong{
+  display:block;
+  color:#aaa;
+  font-size:11px;
+  letter-spacing:.14em;
+  font-weight:900;
+}
+.jdx-socials{
+  display:flex;
+  gap:9px;
+  margin-top:14px;
+}
+.jdx-social{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid #ffffff22;
+  border-radius:11px;
+  background:#0b0b0b;
+  color:#fff;
+  font-size:18px;
+}
+.jdx-social-disabled,.jdx-disabled{opacity:.42}
+.jdx-footer-social small{
+  display:block;
+  margin-top:10px;
+  color:#666;
+  font-size:11px;
+}
+.jdx-payicons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+}
+.jdx-payicons span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  height:34px;
+  padding:0 10px;
+  border:1px solid #ffffff20;
+  border-radius:8px;
+  background:#0b0b0b;
+  color:#bbb;
+  font-size:11px;
+  font-weight:900;
+}
+.jdx-footer-links .footlinks{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  column-gap:22px;
+  row-gap:11px;
+  margin-top:14px;
+}
+.jdx-footer-links a{
+  color:#999;
+  font-size:13px;
+  line-height:1.35;
+}
+.jdx-footer-links a:hover{color:#fff}
+.jdx-footer-note{
+  grid-column:1/-1;
+  border-top:1px solid #ffffff12;
+  padding-top:18px;
+  color:#666;
+  font-size:11px;
+  line-height:1.5;
+}
+.jdx-footer-copy{
+  grid-column:1/-1;
+  margin-top:-8px;
+  color:#555;
+  font-size:11px;
+}
+@media(min-width:761px) and (max-width:1050px){
+  .jdx-footer-grid{
+    grid-template-columns:1.2fr .9fr 1.3fr;
+    gap:30px;
+    padding:46px 0 18px;
+  }
+  .jdx-footer-links{grid-column:1/-1}
+  .jdx-footer-links .footlinks{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+}
+@media(max-width:760px){
+  .jdx-footer-grid{
+    grid-template-columns:1fr 1fr;
+    gap:30px 22px;
+    padding:42px 0 18px;
+  }
+  .jdx-footer-brand,.jdx-footer-note,.jdx-footer-copy{grid-column:1/-1}
+  .jdx-footer-links{grid-column:1/-1}
+  .jdx-footer-links .footlinks{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    column-gap:18px;
+  }
+}
+@media(max-width:480px){
+  .jdx-footer-grid{grid-template-columns:1fr;gap:25px}
+  .jdx-footer-brand,.jdx-footer-social,.jdx-footer-pay,.jdx-footer-links,
+  .jdx-footer-note,.jdx-footer-copy{grid-column:1}
+  .jdx-footer-links .footlinks{grid-template-columns:1fr 1fr}
+}
+</style></head>
 <body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header>
 <main>
 <section class="hero"><div class="wrap hero-grid"><div>

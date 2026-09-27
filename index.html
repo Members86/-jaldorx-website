@@ -171,6 +171,47 @@ section.block{padding:105px 0;border-top:1px solid #ffffff12}.grid2{display:grid
 @media(max-width:760px){
   .insider.block{padding-bottom:52px}
 }
+</style><style id="jaldorx-footer-payment-social-polish">
+.jdx-footer-social,.jdx-footer-pay{min-width:0}
+.jdx-socials{display:flex;gap:10px;margin-top:14px}
+.jdx-social{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
+.jdx-social svg{width:22px;height:22px;display:block}
+.jdx-payicons{
+  display:grid;
+  grid-template-columns:repeat(3,76px);
+  gap:8px;
+  margin-top:14px;
+  justify-content:start;
+}
+.jdx-payicons span{
+  min-width:0!important;
+  width:76px;
+  height:38px;
+  padding:0 6px!important;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  border:1px solid #ffffff20;
+  border-radius:9px;
+  background:#0b0b0b;
+  color:#bdbdbd;
+  font-size:11px;
+  font-weight:900;
+}
+.jdx-payicons .pay-paypal{color:#d6d6d6}
+.jdx-payicons .pay-visa{font-style:italic;letter-spacing:.03em}
+.jdx-payicons .pay-mc{letter-spacing:.06em}
+.jdx-payicons .pay-apple{font-size:12px}
+.jdx-payicons .pay-google{font-size:11px}
+.jdx-payicons .pay-klarna{font-size:11px}
+@media(max-width:1050px) and (min-width:761px){
+  .jdx-payicons{grid-template-columns:repeat(3,72px);gap:7px}
+  .jdx-payicons span{width:72px}
+}
+@media(max-width:480px){
+  .jdx-payicons{grid-template-columns:repeat(3,76px)}
+}
 </style></head>
 <body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header>
 <main>
@@ -187,8 +228,17 @@ section.block{padding:105px 0;border-top:1px solid #ffffff12}.grid2{display:grid
 <section class="block insider" id="insider"><div class="wrap"><div class="insiderbox"><div><div class="kicker">JALDORX INSIDER</div><h2>Sei dabei.</h2><p class="lead">Neuigkeiten, neue Produkte und Überraschungen direkt von JALDORX.</p></div><form onsubmit="event.preventDefault();alert('Newsletter-Anbindung folgt.');"><input type="email" placeholder="E-Mail-Adresse" required><button class="btn primary">INSIDER WERDEN</button></form></div></div></section>
 </main><footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
-<div class="jdx-footer-social"><strong>SOCIAL</strong><div class="jdx-socials"><span class="jdx-social jdx-disabled" title="Instagram – folgt" aria-label="Instagram – folgt">◎</span><span class="jdx-social jdx-disabled" title="TikTok – folgt" aria-label="TikTok – folgt">♪</span></div><small>Instagram &amp; TikTok folgen.</small></div>
-<div class="jdx-footer-pay"><strong>GEPLANTE ZAHLUNGSARTEN</strong><div class="jdx-payicons"><span>PayPal</span><span>VISA</span><span>MC</span><span> Pay</span><span>G Pay</span><span>Klarna</span></div></div>
+<div class="jdx-footer-social"><strong>SOCIAL</strong><div class="jdx-socials">
+<span class="jdx-social jdx-disabled" title="Instagram – folgt" aria-label="Instagram – folgt">
+<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.7" r="1.2" fill="currentColor"/></svg>
+</span>
+<span class="jdx-social jdx-disabled" title="TikTok – folgt" aria-label="TikTok – folgt">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 3.2v11.1a4.2 4.2 0 1 1-3.3-4.1v3.1a1.5 1.5 0 1 0 .9 1.4V3.2h2.4c.3 1.8 1.4 3.1 3.1 3.8v2.5c-1.2-.2-2.3-.7-3.1-1.4v4.2c0 3.2-2.1 5.3-5.1 5.3A5.3 5.3 0 0 1 9 7.1v2.8a2.5 2.5 0 1 0 2.8 2.5V3.2h2.4Z" fill="currentColor"/></svg>
+</span>
+</div><small>Instagram &amp; TikTok folgen.</small></div>
+<div class="jdx-footer-pay"><strong>GEPLANTE ZAHLUNGSARTEN</strong><div class="jdx-payicons">
+<span class="pay-paypal">PayPal</span><span class="pay-visa">VISA</span><span class="pay-mc">MC</span><span class="pay-apple"> Pay</span><span class="pay-google">G Pay</span><span class="pay-klarna">Klarna</span>
+</div></div>
 <div class="jdx-footer-links"><strong>SERVICE &amp; INFOS</strong><div class="footlinks"><a href="info.html">Info</a><a href="kontakt.html">Kontakt</a><a href="versand-zahlung.html">Versand &amp; Zahlung</a><a href="widerruf.html">Widerrufsrecht</a><a href="agb.html">AGB</a><a href="datenschutz.html">Datenschutz</a><a href="impressum.html">Impressum</a></div></div>
 <div class="jdx-footer-note">Die Zahlungsarten, Social-Media-Profile und rechtlichen Inhalte werden vor dem Livegang final eingerichtet.</div>
 <div class="jdx-footer-copy">© 2026 JALDORX · Planungsversion</div>

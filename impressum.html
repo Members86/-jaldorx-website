@@ -249,8 +249,33 @@ body{margin:0;background:#050505 url("data:image/webp;base64,UklGRqwuAgBXRUJQVlA
 .jdx-payicons .pay-google{color:#fff}
 .jdx-payicons .pay-mc .mc-icon{margin:0}
 @media(max-width:480px){.jdx-payicons{grid-template-columns:repeat(3,76px)}}
+</style><style id="jaldorx-stable-layout-v2">
+/* Stable iPad/Safari layout: no fixed shipping layer over page content */
+header{position:sticky!important;top:0!important;z-index:100!important}
+.jdx-ship-banner{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  z-index:10!important;
+  width:100%!important;
+  pointer-events:none!important;
+  box-sizing:border-box!important;
+}
+main{padding-top:0!important}
+.jdx-ship-banner + main{padding-top:0!important}
+.cart-actions,.cart-actions button,.small-btn,.qty-input{
+  touch-action:manipulation!important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+.cart-actions,.cart-actions button,.small-btn,.qty-input{pointer-events:auto!important}
+@media(max-width:760px){
+  main{padding-top:0!important}
+  .jdx-ship-banner{position:relative!important;top:auto!important}
+}
 </style></head>
-<body><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header><main class="legal-page"><div class="wrap"><a class="accent" href="index.html">← Zurück zu JALDORX</a><div class="kicker" style="margin-top:35px"></div><h1>Impressum.</h1><div class="legal-box"><p>Diese Seite ist für das vollständige Impressum vorbereitet. Die rechtlich erforderlichen Angaben werden vor dem Livegang eingesetzt.</p><h2>Angaben zum Anbieter</h2><p><strong>Name / Firma:</strong> HIER EINTRAGEN</p><p><strong>Anschrift:</strong> HIER EINTRAGEN</p><p><strong>E-Mail:</strong> HIER EINTRAGEN</p><p><strong>Vertretungsberechtigte Person:</strong> HIER EINTRAGEN</p></div></div></main><footer class="footer"><div class="wrap jdx-footer-grid">
+<body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div><main class="legal-page"><div class="wrap"><a class="accent" href="index.html">← Zurück zu JALDORX</a><div class="kicker" style="margin-top:35px"></div><h1>Impressum.</h1><div class="legal-box"><p>Diese Seite ist für das vollständige Impressum vorbereitet. Die rechtlich erforderlichen Angaben werden vor dem Livegang eingesetzt.</p><h2>Angaben zum Anbieter</h2><p><strong>Name / Firma:</strong> HIER EINTRAGEN</p><p><strong>Anschrift:</strong> HIER EINTRAGEN</p><p><strong>E-Mail:</strong> HIER EINTRAGEN</p><p><strong>Vertretungsberechtigte Person:</strong> HIER EINTRAGEN</p></div></div></main><footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
 <div class="jdx-footer-social"><strong>SOCIAL</strong><div class="jdx-socials">
 <span class="jdx-social jdx-disabled" title="Instagram – folgt" aria-label="Instagram – folgt">

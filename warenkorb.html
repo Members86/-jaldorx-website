@@ -416,31 +416,75 @@ main{
 const MAX=40,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}];
 function shipping(q,sub){if(sub>=99)return 0;return q<=10?3.49:5.99}
 const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
-const get=()=>{try{const urlQ=Number(new URLSearchParams(location.search).get('qty')||0);if(urlQ>0)return {mystery:{qty:Math.min(MAX,urlQ)}};const raw=localStorage.getItem('jaldorxCart');const c=raw?JSON.parse(raw):{};if(c&&c.mystery&&Number(c.mystery.qty)>0)return c;const q=Number(sessionStorage.getItem('jaldorxCartQty')||0)||Number(localStorage.getItem('jaldorxCartQty')||0)||Number((document.cookie.match(/(?:^|; )jaldorxQty=(\\d+)/)||[])[1]||0);return q>0?{mystery:{qty:Math.min(MAX,q)}}:{};}catch(e){const q=Number(localStorage.getItem('jaldorxCartQty')||0);return q>0?{mystery:{qty:Math.min(MAX,q)}}:{}}};
-const save=c=>{const q=Number(c.mystery?.qty||0);if(q<=0){localStorage.removeItem('jaldorxCart');localStorage.removeItem('jaldorxCartQty');sessionStorage.removeItem('jaldorxCartQty');document.cookie='jaldorxQty=; path=/; max-age=0; SameSite=Lax';return}const data=JSON.stringify(c);localStorage.setItem('jaldorxCart',data);localStorage.setItem('jaldorxCartQty',String(q));sessionStorage.setItem('jaldorxCartQty',String(q));document.cookie='jaldorxQty='+q+'; path=/; max-age=2592000; SameSite=Lax'};
+function getQty(){
+  try{
+    const raw=localStorage.getItem('jaldorxCart');
+    const c=raw?JSON.parse(raw):{};
+    const q=Number(c?.mystery?.qty||0);
+    if(q>0)return Math.min(MAX,q);
+    return Math.min(MAX,Number(localStorage.getItem('jaldorxCartQty')||0));
+  }catch(e){return 0}
+}
+function saveQty(q){
+  q=Math.max(0,Math.min(MAX,Number(q)||0));
+  if(q===0){
+    localStorage.removeItem('jaldorxCart');
+    localStorage.removeItem('jaldorxCartQty');
+    sessionStorage.removeItem('jaldorxCartQty');
+    document.cookie='jaldorxQty=; path=/; max-age=0; SameSite=Lax';
+  }else{
+    const data=JSON.stringify({mystery:{qty:q}});
+    localStorage.setItem('jaldorxCart',data);
+    localStorage.setItem('jaldorxCartQty',String(q));
+    sessionStorage.setItem('jaldorxCartQty',String(q));
+    document.cookie='jaldorxQty='+q+'; path=/; max-age=2592000; SameSite=Lax';
+  }
+  document.querySelectorAll('.cart-count').forEach(x=>x.textContent=q);
+}
 const unit=q=>q===40?129.90/40:(tiers.find(t=>q<=t.max)||tiers[0]).price;
 const total=q=>q===40?129.90:q*unit(q);
-function render(){const c=get(),q=Math.min(MAX,Number(c.mystery?.qty||0)),el=document.getElementById('cart');if(q>0){save(c)}document.querySelectorAll('.cart-count').forEach(x=>x.textContent=q);
-if(!q){el.innerHTML='<div class="cart-box"><h2>Dein Warenkorb ist leer.</h2><p class="muted">Füge zuerst einen Mystery Duftbaum hinzu.</p><a class="btn primary" href="shop.html">ZUM SHOP</a></div>';return}
-const sub=total(q),normal=q*BASE,saveAmt=normal-sub,ship=shipping(q,sub),grand=sub+ship,free=ship===0;
-const discountText=saveAmt>0?'Mengenrabatt: − '+euro(saveAmt)+' · ':'';
-const shippingText=free?'✓ Versand kostenlos ab 99 €':'Noch '+euro(99-sub)+' bis zum kostenlosen Versand ab 99 € · Versand: '+euro(ship);
-el.innerHTML='<div class="cart-box"><div class="cart-line"><div><strong>Mystery Duftbaum</strong><div class="muted">'+euro(unit(q))+' pro Stück</div></div><div class="cart-actions"><button type="button" class="small-btn" id="minus" onclick="window.jdxMinus(event)">−</button><input class="qty-input" id="q" value="'+q+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button type="button" class="small-btn" id="plus" onclick="window.jdxPlus(event)">+</button></div><div><strong>'+euro(sub)+'</strong><br><button type="button" class="small-btn remove" id="remove" onclick="window.jdxRemove(event)">ENTFERNEN</button></div></div><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div><p class="muted">'+discountText+shippingText+'</p><div class="cart-buttons"><button type="button" class="small-btn" id="clear" onclick="window.jdxClear(event)">WARENKORB LEEREN</button><a class="btn secondary" href="shop.html">WEITER SHOPPEN</a><a class="btn primary" href="checkout.html">ZUR KASSE</a></div></div>';
-bindCartControls();
+
+function render(){
+  const q=getQty();
+  document.querySelectorAll('.cart-count').forEach(x=>x.textContent=q);
+  const el=document.getElementById('cart');
+  if(!el)return;
+  if(!q){
+    el.innerHTML='<div class="cart-box"><h2>Dein Warenkorb ist leer.</h2><p class="muted">Füge zuerst einen Mystery Duftbaum hinzu.</p><a class="btn primary" href="shop.html">ZUM SHOP</a></div>';
+    return;
+  }
+  const sub=total(q),normal=q*BASE,saveAmt=normal-sub,ship=shipping(q,sub),grand=sub+ship,free=ship===0;
+  const discountText=saveAmt>0?'Mengenrabatt: − '+euro(saveAmt)+' · ':'';
+  const shippingText=free?'✓ Versand kostenlos ab 99 €':'Noch '+euro(99-sub)+' bis zum kostenlosen Versand ab 99 € · Versand: '+euro(ship);
+  el.innerHTML='<div class="cart-box"><div class="cart-line"><div><strong>Mystery Duftbaum</strong><div class="muted">'+euro(unit(q))+' pro Stück</div></div><div class="cart-actions"><button type="button" class="small-btn" data-cart-action="minus">−</button><input class="qty-input" id="q" value="'+q+'" inputmode="numeric" autocomplete="off" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button type="button" class="small-btn" data-cart-action="plus">+</button></div><div><strong>'+euro(sub)+'</strong><br><button type="button" class="small-btn remove" data-cart-action="remove">ENTFERNEN</button></div></div><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div><p class="muted">'+discountText+shippingText+'</p><div class="cart-buttons"><button type="button" class="small-btn" data-cart-action="clear">WARENKORB LEEREN</button><a class="btn secondary" href="shop.html">WEITER SHOPPEN</a><a class="btn primary" href="checkout.html">ZUR KASSE</a></div></div>';
 }
-window.jdxMinus=function(e){if(e)e.preventDefault();const input=document.getElementById('q');const n=input?parseInt(input.value,10)||1:1;setQty(n-1);};
-window.jdxPlus=function(e){if(e)e.preventDefault();const input=document.getElementById('q');const n=input?parseInt(input.value,10)||1:1;setQty(n+1);};
-window.jdxRemove=function(e){if(e)e.preventDefault();save({});render();};
-window.jdxClear=function(e){if(e)e.preventDefault();save({});render();};
-function bindCartControls(){
-  const minus=document.getElementById('minus'), plus=document.getElementById('plus'), remove=document.getElementById('remove'), clear=document.getElementById('clear'), input=document.getElementById('q');
-  if(minus) minus.onclick=()=>setQty(qtyFromDom()-1);
-  if(plus) plus.onclick=()=>setQty(qtyFromDom()+1);
-  if(remove) remove.onclick=()=>{save({});render()};
-  if(clear) clear.onclick=()=>{save({});render()};
-  if(input) input.oninput=()=>{const n=parseInt(input.value.replace(/[^0-9]/g,''),10)||1;setQty(n,true)};
+
+function changeQty(delta){
+  const input=document.getElementById('q');
+  const current=input?parseInt(input.value,10)||getQty():getQty();
+  saveQty(current+delta);
+  render();
 }
-function qtyFromDom(){const input=document.getElementById('q');return input?Math.min(MAX,Math.max(1,parseInt(input.value,10)||1)):1;}
-function setQty(n,silent=false){n=Math.max(1,Math.min(MAX,n));if(n>=MAX&&!silent){}save({mystery:{qty:n}});render()}
-document.addEventListener('DOMContentLoaded',render);window.addEventListener('pageshow',render);window.addEventListener('storage',e=>{if(e.key==='jaldorxCart'||e.key===null)render()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
+
+document.addEventListener('click',function(e){
+  const target=e.target.closest('[data-cart-action]');
+  if(!target)return;
+  e.preventDefault();
+  e.stopPropagation();
+  const action=target.getAttribute('data-cart-action');
+  if(action==='minus') changeQty(-1);
+  else if(action==='plus') changeQty(1);
+  else if(action==='remove'||action==='clear'){saveQty(0);render();}
+},true);
+
+document.addEventListener('input',function(e){
+  if(!e.target.matches('#q'))return;
+  let n=parseInt(e.target.value.replace(/[^0-9]/g,''),10);
+  if(!Number.isFinite(n))return;
+  n=Math.max(1,Math.min(MAX,n));
+  saveQty(n);
+  render();
+},true);
+
+document.addEventListener('DOMContentLoaded',render);
 </script></body></html>

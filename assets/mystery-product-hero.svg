@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 900">
+<defs>
+ <linearGradient id="bag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#202020"/><stop offset=".55" stop-color="#0b0b0b"/><stop offset="1" stop-color="#020202"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#d7b43a" stop-opacity=".28"/><stop offset="1" stop-color="#d7b43a" stop-opacity="0"/></radialGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="35" stdDeviation="28" flood-color="#000" flood-opacity=".75"/></filter>
+</defs>
+<ellipse cx="350" cy="430" rx="290" ry="350" fill="url(#glow)" opacity=".32"/>
+<g transform="translate(350 450) rotate(2) translate(-350 -450)" filter="url(#shadow)">
+ <path d="M170 85 Q350 65 530 85 L555 790 Q350 825 145 790 Z" fill="url(#bag)" stroke="#555" stroke-width="3"/>
+ <path d="M170 85 Q350 102 530 85" fill="none" stroke="#777" stroke-width="2" opacity=".6"/>
+ <text x="350" y="205" text-anchor="middle" fill="#d7b43a" font-family="Arial,Helvetica,sans-serif" font-size="48" font-weight="900" letter-spacing="1">MYSTERY</text>
+ <text x="350" y="260" text-anchor="middle" fill="#d7b43a" font-family="Arial,Helvetica,sans-serif" font-size="48" font-weight="900" letter-spacing="1">DUFTBAUM</text>
+ <g transform="translate(350 410)">
+   <rect x="-82" y="-82" width="164" height="164" fill="none" stroke="#d7b43a" stroke-width="5" transform="rotate(45)"/>
+   <text x="0" y="27" text-anchor="middle" fill="#d7b43a" font-family="Arial,Helvetica,sans-serif" font-size="76" font-weight="700">?</text>
+ </g>
+ <text x="350" y="635" text-anchor="middle" fill="#d7b43a" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="900">EIN DUFT. DEINE</text>
+ <text x="350" y="675" text-anchor="middle" fill="#d7b43a" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="900">ÜBERRASCHUNG.</text>
+ <text x="350" y="715" text-anchor="middle" fill="#d7b43a" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="900">GUT ODER EKLIG?</text>
+</g>
+</svg>

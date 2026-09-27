@@ -343,6 +343,56 @@ main{padding-top:0!important}
   main{padding-top:0!important}
   .jdx-ship-banner{position:relative!important;top:auto!important}
 }
+</style><style id="jaldorx-cart-no-compositing-final">
+/* iPad/Safari: Warenkorb ohne feste/sticky Touch-Layer */
+header{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  z-index:20!important;
+}
+.jdx-ship-banner{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  z-index:5!important;
+  display:block!important;
+  width:100%!important;
+  pointer-events:none!important;
+  transform:none!important;
+}
+main{
+  padding-top:0!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#cart{
+  position:relative!important;
+  z-index:2!important;
+}
+.cart-box,
+.cart-line,
+.cart-actions,
+.cart-actions button,
+.cart-actions input,
+.cart-buttons,
+.cart-buttons button,
+.cart-buttons a,
+.small-btn,
+.qty-input{
+  position:relative!important;
+  z-index:3!important;
+  pointer-events:auto!important;
+}
+.cart-actions button,
+.cart-buttons button,
+.small-btn{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  touch-action:manipulation!important;
+}
 </style></head>
 <body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div>
 <main><div class="wrap page"><div class="page-head"><div class="kicker">DEIN WARENKORB</div><h1>WARENKORB.</h1></div><div id="cart"></div></div></main>

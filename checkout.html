@@ -368,6 +368,28 @@ main{
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
 }
+</style><style id="jaldorx-checkout-visual-polish">
+/* Kasse – übersichtlichere Formulare und Bestellübersicht */
+.checkout-grid{align-items:start}
+.checkout-grid>.cart-box{min-width:0}
+.fields{min-width:0}
+.field{min-width:0}
+.field input,.field select{min-height:46px}
+.payment label{display:block;cursor:pointer;line-height:1.35}
+.payment input{margin-right:8px}
+.cart-total{gap:20px}
+@media (min-width:761px) and (max-width:1050px){
+  .checkout-grid{grid-template-columns:1fr;max-width:820px;margin:0 auto}
+}
+@media(max-width:760px){
+  .checkout-grid{gap:18px}
+  .cart-box{padding:22px}
+  .fields{gap:12px}
+  .field input,.field select{min-height:48px;font-size:16px}
+  .payment{gap:8px}
+  .payment label{padding:15px}
+  .checkout-grid .btn{width:100%;min-height:50px}
+}
 </style></head>
 <body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div>
 <main><div class="wrap page"><div class="page-head"><div class="kicker">CHECKOUT</div><h1>DEINE<br><span>BESTELLUNG.</span></h1></div><div id="checkout-content"><div class="checkout-grid">

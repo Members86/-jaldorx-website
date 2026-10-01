@@ -460,8 +460,10 @@ const unit=q=>q===40?129.90/40:(tiers.find(t=>q<=t.max)||tiers[0]).price;
 const total=q=>q===40?129.90:q*unit(q);
 
 function render(){
+  const params=new URLSearchParams(location.search);
   const q=getQty();
-  if(new URLSearchParams(location.search).get('clear')==='1')saveQty(0);
+  if(params.get('clear')==='1')saveQty(0);
+  else if(params.get('qty')){ saveQty(q); history.replaceState(null,'','warenkorb.html'); }
   document.querySelectorAll('.cart-count').forEach(x=>x.textContent=q);
   const el=document.getElementById('cart');
   if(!el)return;

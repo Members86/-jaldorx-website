@@ -425,74 +425,30 @@ main{
 <div class="jdx-footer-note">Die Zahlungsarten, Social-Media-Profile und rechtlichen Inhalte werden vor dem Livegang final eingerichtet.</div>
 <div class="jdx-footer-copy">© 2026 JALDORX · Planungsversion</div>
 </div></footer><script>
-const MAX=40,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}];
+const MAX=40,BOX_MAX=4,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}],boxes={pure:{name:'Pure Mystery',price:38.90},one:{name:'1 guter garantiert',price:40.90},two:{name:'2 gute garantiert',price:42.90},nine:{name:'9 gute + 1 schlechter',price:46.90}};
 function shipping(q,sub){if(sub>=99)return 0;return q<=10?3.49:5.99}
 const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
-function getQty(){
-  try{
-    const p=new URLSearchParams(location.search);
-    if(p.get('clear')==='1')return 0;
-    const urlQty=Number(p.get('qty')||0);
-    if(urlQty>0)return Math.min(MAX,urlQty);
-    const raw=localStorage.getItem('jaldorxCart');
-    const c=raw?JSON.parse(raw):{};
-    const q=Number(c?.mystery?.qty||0);
-    return q>0?Math.min(MAX,q):Math.min(MAX,Number(localStorage.getItem('jaldorxCartQty')||0));
-  }catch(e){return 0}
-}
-function saveQty(q){
-  q=Math.max(0,Math.min(MAX,Number(q)||0));
-  if(q===0){
-    localStorage.removeItem('jaldorxCart');
-    localStorage.removeItem('jaldorxCartQty');
-    sessionStorage.removeItem('jaldorxCartQty');
-    document.cookie='jaldorxQty=; path=/; max-age=0; SameSite=Lax';
-  }else{
-    const data=JSON.stringify({mystery:{qty:q}});
-    localStorage.setItem('jaldorxCart',data);
-    localStorage.setItem('jaldorxCartQty',String(q));
-    sessionStorage.setItem('jaldorxCartQty',String(q));
-    document.cookie='jaldorxQty='+q+'; path=/; max-age=2592000; SameSite=Lax';
-  }
-  document.querySelectorAll('.cart-count').forEach(x=>x.textContent=q);
-}
-const unit=q=>q===40?129.90/40:(tiers.find(t=>q<=t.max)||tiers[0]).price;
-const total=q=>q===40?129.90:q*unit(q);
-
+function getCart(){try{const raw=localStorage.getItem('jaldorxCart');return raw?JSON.parse(raw):{}}catch(e){return {}}}
+function getItem(){const c=getCart(),m=c.mystery||{};return m}
+function saveItem(m){const q=m.mode==='box'?Number(m.boxQty||0)*10:Number(m.qty||0);if(!q){localStorage.removeItem('jaldorxCart');localStorage.removeItem('jaldorxCartQty');sessionStorage.removeItem('jaldorxCartQty');document.cookie='jaldorxQty=; path=/; max-age=0; SameSite=Lax'}else{m.qty=q;const data=JSON.stringify({mystery:m});localStorage.setItem('jaldorxCart',data);localStorage.setItem('jaldorxCartQty',String(q));sessionStorage.setItem('jaldorxCartQty',String(q));document.cookie='jaldorxQty='+q+'; path=/; max-age=2592000; SameSite=Lax'}document.querySelectorAll('.cart-count').forEach(x=>x.textContent=q)}
 function render(){
-  const params=new URLSearchParams(location.search);
-  const q=getQty();
-  if(params.get('clear')==='1')saveQty(0);
-  else if(params.get('qty')){ saveQty(q); history.replaceState(null,'','warenkorb.html'); }
-  document.querySelectorAll('.cart-count').forEach(x=>x.textContent=q);
-  const el=document.getElementById('cart');
-  if(!el)return;
-  if(!q){
-    el.innerHTML='<div class="cart-box"><h2>Dein Warenkorb ist leer.</h2><p class="muted">Füge zuerst einen Mystery Duftbaum hinzu.</p><a class="btn primary" href="shop.html">ZUM SHOP</a></div>';
-    return;
-  }
-  const sub=total(q),normal=q*BASE,saveAmt=normal-sub,ship=shipping(q,sub),grand=sub+ship,free=ship===0;
-  const discountText=saveAmt>0?'Mengenrabatt: − '+euro(saveAmt)+' · ':'';
-  const shippingText=free?'✓ Versand kostenlos ab 99 €':'Noch '+euro(99-sub)+' bis zum kostenlosen Versand ab 99 € · Versand: '+euro(ship);
-  const minus=Math.max(1,q-1),plus=Math.min(MAX,q+1);
-  el.innerHTML='<div class="cart-box"><div class="cart-line"><div><strong>Mystery Duftbaum</strong><div class="muted">'+euro(unit(q))+' pro Stück</div></div><div class="cart-actions"><a class="small-btn cart-native-action" href="warenkorb.html?qty='+minus+'" data-qty="'+minus+'" aria-label="Ein Stück weniger">−</a><input class="qty-input" id="q" value="'+q+'" inputmode="numeric" autocomplete="off" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><a class="small-btn cart-native-action" href="warenkorb.html?qty='+plus+'" data-qty="'+plus+'" aria-label="Ein Stück mehr">+</a></div><div><strong>'+euro(sub)+'</strong><br><a class="small-btn remove cart-native-action" href="warenkorb.html?clear=1">ENTFERNEN</a></div></div><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div><p class="muted">'+discountText+shippingText+'</p><div class="cart-buttons"><a class="small-btn cart-native-action" href="warenkorb.html?clear=1">WARENKORB LEEREN</a><a class="btn secondary" href="shop.html">WEITER SHOPPEN</a><a class="btn primary" href="checkout.html?qty='+q+'">ZUR KASSE</a></div></div>';
+ const params=new URLSearchParams(location.search);let m=getItem();
+ if(params.get('clear')==='1'){saveItem({});m={}}
+ else if(params.get('qty')){const q=Math.min(MAX,Math.max(1,Number(params.get('qty'))||1));m={mode:'normal',qty:q};saveItem(m)}
+ document.querySelectorAll('.cart-count').forEach(x=>x.textContent=m.mode==='box'?Number(m.boxQty||0)*10:Number(m.qty||0));
+ const el=document.getElementById('cart');if(!el)return;
+ const q=m.mode==='box'?Number(m.boxQty||0)*10:Number(m.qty||0);
+ if(!q){el.innerHTML='<div class="cart-box"><h2>Dein Warenkorb ist leer.</h2><p class="muted">Füge zuerst einen Mystery Duftbaum oder eine Mystery Box hinzu.</p><a class="btn primary" href="shop.html">ZUM SHOP</a></div>';return}
+ let sub,normal,discountText,ship;
+ if(m.mode==='box'){const b=boxes[m.boxType]||boxes.pure;sub=b.price*Number(m.boxQty||1);normal=q*BASE;discountText='Mystery Box · '+b.name+' · '+Number(m.boxQty||1)+' Box(en)';}
+ else{sub=q===40?129.90:q*(tiers.find(t=>q<=t.max)||tiers[0]).price;normal=q*BASE;discountText=normal-sub>0?'Mengenrabatt: − '+euro(normal-sub):'';}
+ ship=shipping(q,sub);const grand=sub+ship,free=ship===0;
+ const lineTitle=m.mode==='box'?'Mystery Box · '+(boxes[m.boxType]||boxes.pure).name:'Mystery Duftbaum';
+ const lineSub=m.mode==='box'?Number(m.boxQty||1)+' Box(en) · '+q+' Duftbäume':euro(q===40?129.90/40:(tiers.find(t=>q<=t.max)||tiers[0]).price)+' pro Stück';
+ const controls=m.mode==='box'?'<div class="cart-actions"><a class="small-btn cart-native-action" href="warenkorb.html?boxqty='+(Math.max(1,Number(m.boxQty||1)-1))+'" data-boxqty="'+Math.max(1,Number(m.boxQty||1)-1)+'">−</a><input class="qty-input" id="boxq" value="'+Number(m.boxQty||1)+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><a class="small-btn cart-native-action" href="warenkorb.html?boxqty='+(Math.min(BOX_MAX,Number(m.boxQty||1)+1))+'" data-boxqty="'+Math.min(BOX_MAX,Number(m.boxQty||1)+1)+'">+</a></div>':'<div class="cart-actions"><a class="small-btn cart-native-action" href="warenkorb.html?qty='+Math.max(1,q-1)+'" data-qty="'+Math.max(1,q-1)+'">−</a><input class="qty-input" id="q" value="'+q+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><a class="small-btn cart-native-action" href="warenkorb.html?qty='+Math.min(MAX,q+1)+'" data-qty="'+Math.min(MAX,q+1)+'">+</a></div>';
+ el.innerHTML='<div class="cart-box"><div class="cart-line"><div><strong>'+lineTitle+'</strong><div class="muted">'+lineSub+'</div></div>'+controls+'<div><strong>'+euro(sub)+'</strong><br><a class="small-btn remove" href="warenkorb.html?clear=1">ENTFERNEN</a></div></div><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div><p class="muted">'+discountText+(discountText?' · ':'')+(free?'✓ Versand kostenlos ab 99 €':'Noch '+euro(99-sub)+' bis zum kostenlosen Versand ab 99 € · Versand: '+euro(ship))+'</p><div class="cart-buttons"><a class="small-btn" href="warenkorb.html?clear=1">WARENKORB LEEREN</a><a class="btn secondary" href="shop.html">WEITER SHOPPEN</a><a class="btn primary" href="checkout.html">ZUR KASSE</a></div></div>';
 }
-document.addEventListener('click',function(e){
-  const action=e.target.closest('.cart-native-action[data-qty]');
-  if(!action)return;
-  e.preventDefault();
-  const n=Number(action.dataset.qty||0);
-  if(!n)return;
-  saveQty(n);
-  render();
-},true);
-document.addEventListener('input',function(e){
-  if(!e.target.matches('#q'))return;
-  let n=parseInt(e.target.value.replace(/[^0-9]/g,''),10);
-  if(!Number.isFinite(n))return;
-  n=Math.max(1,Math.min(MAX,n));
-  saveQty(n);
-  render();
-},true);
+document.addEventListener('click',function(e){const a=e.target.closest('.cart-native-action');if(!a)return;if(a.dataset.qty){e.preventDefault();saveItem({mode:'normal',qty:Number(a.dataset.qty)});render()}else if(a.dataset.boxqty){e.preventDefault();const m=getItem();saveItem({mode:'box',boxType:m.boxType,boxQty:Number(a.dataset.boxqty)});render()}},true);
+document.addEventListener('input',function(e){if(e.target.matches('#q')){let n=parseInt(e.target.value.replace(/[^0-9]/g,''),10);if(Number.isFinite(n)){saveItem({mode:'normal',qty:Math.max(1,Math.min(MAX,n))});render()}}if(e.target.matches('#boxq')){let n=parseInt(e.target.value.replace(/[^0-9]/g,''),10);if(Number.isFinite(n)){const m=getItem();saveItem({mode:'box',boxType:m.boxType,boxQty:Math.max(1,Math.min(BOX_MAX,n))});render()}}},true);
 document.addEventListener('DOMContentLoaded',render);
 </script></body></html>

@@ -421,7 +421,7 @@ main{
 <div class="jdx-box-option" data-box="one"><strong>🍀 1 GUTER GARANTIERT</strong><span>Mindestens 1 guter Duft ist garantiert.</span><b>40,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="one">−</button><input id="boxQtyOne" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 1 guter garantiert"><button type="button" data-box-plus="one">+</button><small>Boxen</small></div></div>
 <div class="jdx-box-option" data-box="two"><strong>🍀🍀 2 GUTE GARANTIERT</strong><span>Mindestens 2 gute Düfte sind garantiert.</span><b>42,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="two">−</button><input id="boxQtyTwo" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 2 gute garantiert"><button type="button" data-box-plus="two">+</button><small>Boxen</small></div></div>
 <div class="jdx-box-option" data-box="nine"><strong>👑 9 GUTE + 1 SCHLECHTER</strong><span>9 gute und 1 schlechter Duft sind garantiert.</span><b>46,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="nine">−</button><input id="boxQtyNine" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 9 gute und 1 schlechter"><button type="button" data-box-plus="nine">+</button><small>Boxen</small></div></div>
-</div><div class="jdx-box-selected"><strong>DEINE AUSWAHL</strong><div class="jdx-box-selected-list" id="boxSelectionList"><span class="muted">Noch keine Box ausgewählt.</span></div><div class="jdx-box-selected-total"><span id="boxSelectionCount">0 von 4 Boxen</span><b id="boxSelectionTotal">0,00 €</b></div><button class="btn primary" id="addBox" type="button" disabled style="width:100%;margin-top:16px">AUSWAHL IN DEN WARENKORB</button></div></section></div></main>
+</div><div class="jdx-box-selected"><strong>DEINE AUSWAHL</strong><div class="jdx-box-selected-list" id="boxSelectionList"><span class="muted">Noch keine Box ausgewählt.</span></div><div class="jdx-box-selected-total"><span id="boxSelectionCount">0 Boxen · 0 Duftbäume</span><b id="boxSelectionTotal">0,00 €</b></div><button class="btn primary" id="addBox" type="button" disabled style="width:100%;margin-top:16px">MYSTERY BOXEN IN DEN WARENKORB</button></div></section></div></main>
 <div class="mini-cart" id="mini"><h3>Im Warenkorb</h3><div id="miniText"></div><div class="mini-actions"><a class="btn primary" href="warenkorb.html">WARENKORB ANSEHEN / BEARBEITEN</a><button class="btn secondary" id="continue">WEITER SHOPPEN</button></div></div>
 <footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
@@ -467,7 +467,7 @@ function updateBoxUI(){
   list.innerHTML='';
   if(!count)list.innerHTML='<span class="muted">Noch keine Box ausgewählt.</span>';
   boxOrder.forEach(k=>{const n=boxSelection[k];if(!n)return;const chip=document.createElement('span');chip.className='jdx-box-chip';chip.textContent=n+' × '+boxes[k].name;list.appendChild(chip)});
-  document.getElementById('boxSelectionCount').textContent=count+' von 4 Boxen';
+  document.getElementById('boxSelectionCount').textContent=count+' Boxen · '+(count*10)+' Duftbäume';
   let sum=0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
   document.getElementById('boxSelectionTotal').textContent=euro(sum);
   document.getElementById('addBox').disabled=count===0;

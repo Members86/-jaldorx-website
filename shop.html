@@ -435,27 +435,87 @@ main{
 <div class="jdx-footer-note">Die Zahlungsarten, Social-Media-Profile und rechtlichen Inhalte werden vor dem Livegang final eingerichtet.</div>
 <div class="jdx-footer-copy">© 2026 JALDORX · Planungsversion</div>
 </div></footer><script>
+
 const MAX=40,BOX_MAX=4,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}];
 const boxes={pure:{name:'Pure Mystery',price:38.90},one:{name:'1 guter garantiert',price:40.90},two:{name:'2 gute garantiert',price:42.90},nine:{name:'9 gute + 1 schlechter',price:46.90}};
 const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
 function unit(q){return q===40?129.90/40:(tiers.find(t=>q<=t.max)||tiers[0]).price}
 function total(q){return q===40?129.90:q*unit(q)}
-function get(){try{const raw=localStorage.getItem('jaldorxCart');return raw?JSON.parse(raw):{};}catch(e){return {}}}
-function save(c){const q=Number(c.mystery?.qty||0);const data=JSON.stringify(c);localStorage.setItem('jaldorxCart',data);localStorage.setItem('jaldorxCartQty',String(q));sessionStorage.setItem('jaldorxCartQty',String(q));document.cookie='jaldorxQty='+q+'; path=/; max-age=2592000; SameSite=Lax';updateCounts()}
-function updateCounts(){const c=get(),m=c.mystery||{};const q=m.mode==='box'?Number(m.boxQty||0)*10:Number(m.qty||0);document.querySelectorAll('.cart-count').forEach(e=>e.textContent=q)}
+function readItems(){
+  try{
+    const c=JSON.parse(localStorage.getItem('jaldorxCart')||'{}');
+    if(Array.isArray(c.items)) return c.items.filter(Boolean);
+    const m=c.mystery||{};
+    return m.mode==='box'&&m.boxType?[{mode:'box',boxType:m.boxType,boxQty:Math.max(1,Math.min(BOX_MAX,Number(m.boxQty||1)))}]:
+      Number(m.qty||0)>0?[{mode:'normal',qty:Math.max(1,Math.min(MAX,Number(m.qty||0)))}]:[];
+  }catch(e){return []}
+}
+function itemQty(i){return i.mode==='box'?Number(i.boxQty||0)*10:Number(i.qty||0)}
+function cartQty(items=readItems()){return items.reduce((sum,i)=>sum+itemQty(i),0)}
+function saveItems(items){
+  const clean=items.filter(i=>itemQty(i)>0);
+  const q=cartQty(clean);
+  const data=q?JSON.stringify({items:clean}):'{}';
+  localStorage.setItem('jaldorxCart',data);
+  localStorage.setItem('jaldorxCartQty',String(q));
+  sessionStorage.setItem('jaldorxCartQty',String(q));
+  document.cookie='jaldorxQty='+q+'; path=/; max-age=2592000; SameSite=Lax';
+  updateCounts(q);
+}
+function updateCounts(q=cartQty()){document.querySelectorAll('.cart-count').forEach(e=>e.textContent=q)}
 const qty=document.getElementById('qty'),warning=document.getElementById('warning'),box=document.getElementById('discountBox');
-function render(){let q=parseInt(qty.value,10)||0;q=Math.max(1,Math.min(MAX,q));qty.value=q;warning.textContent='';document.getElementById('unitPrice').textContent=euro(unit(q))+' / Stück';const normal=q*BASE,saveAmt=normal-total(q);box.innerHTML=q===40?'<strong>40 Stück: 129,90 € gesamt</strong><br><span class="muted">Maximaler Online-Rabatt erreicht.</span>':`Mengenpreis: <strong>${euro(unit(q))}</strong> pro Stück${saveAmt>0?`<br><span class="muted">Du sparst ${euro(saveAmt)} gegenüber dem Einzelpreis.</span>`:''}`}
+function render(){
+  let q=parseInt(qty.value,10)||0;q=Math.max(1,Math.min(MAX,q));qty.value=q;warning.textContent='';
+  document.getElementById('unitPrice').textContent=euro(unit(q))+' / Stück';
+  const normal=q*BASE,saveAmt=normal-total(q);
+  box.innerHTML=q===40?'<strong>40 Stück: 129,90 € gesamt</strong><br><span class="muted">Maximaler Online-Rabatt erreicht.</span>':`Mengenpreis: <strong>${euro(unit(q))}</strong> pro Stück${saveAmt>0?`<br><span class="muted">Du sparst ${euro(saveAmt)} gegenüber dem Einzelpreis.</span>`:''}`;
+}
 qty.addEventListener('input',()=>{let raw=qty.value.replace(/[^0-9]/g,'');if(raw===''){warning.textContent='Bitte eine Menge eingeben.';return}let n=parseInt(raw,10);if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;render()});
 document.getElementById('minus').onclick=()=>{qty.value=Math.max(1,(parseInt(qty.value)||1)-1);render()};
 document.getElementById('plus').onclick=()=>{let n=(parseInt(qty.value)||1)+1;if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;render()};
-document.getElementById('add').onclick=()=>{const q=parseInt(qty.value,10)||0;if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}save({mystery:{qty:q,mode:'normal'}});document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum · ${euro(total(q))}`;document.getElementById('mini').classList.add('open')};
+document.getElementById('add').onclick=()=>{
+  const q=parseInt(qty.value,10)||0,items=readItems(),other=cartQty(items.filter(i=>i.mode!=='normal'));
+  if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}
+  if(other+q>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Reduziere zuerst die Mystery Boxen.';return}
+  const existing=items.find(i=>i.mode==='normal');
+  if(existing) existing.qty=q; else items.unshift({mode:'normal',qty:q});
+  saveItems(items);
+  document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum · ${euro(total(q))}`;
+  document.getElementById('mini').classList.add('open');
+};
 let selectedBox=null;
-document.querySelectorAll('.jdx-box-option').forEach(btn=>btn.onclick=()=>{selectedBox=btn.dataset.box;document.querySelectorAll('.jdx-box-option').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('boxName').textContent=boxes[selectedBox].name;document.getElementById('addBox').disabled=false;updateBoxTotal()});
-function updateBoxTotal(){if(!selectedBox)return;const q=Math.max(1,Math.min(BOX_MAX,parseInt(document.getElementById('boxQty').value,10)||1));document.getElementById('boxQty').value=q;document.getElementById('boxTotal').textContent=euro(boxes[selectedBox].price*q)}
+document.querySelectorAll('.jdx-box-option').forEach(btn=>btn.onclick=()=>{
+  selectedBox=btn.dataset.box;
+  document.querySelectorAll('.jdx-box-option').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('boxName').textContent=boxes[selectedBox].name;
+  document.getElementById('addBox').disabled=false;
+  updateBoxTotal();
+});
+function updateBoxTotal(){
+  if(!selectedBox)return;
+  const q=Math.max(1,Math.min(BOX_MAX,parseInt(document.getElementById('boxQty').value,10)||1));
+  document.getElementById('boxQty').value=q;
+  document.getElementById('boxTotal').textContent=euro(boxes[selectedBox].price*q);
+}
 document.getElementById('boxMinus').onclick=()=>{document.getElementById('boxQty').value=Math.max(1,(parseInt(document.getElementById('boxQty').value)||1)-1);updateBoxTotal()};
 document.getElementById('boxPlus').onclick=()=>{document.getElementById('boxQty').value=Math.min(BOX_MAX,(parseInt(document.getElementById('boxQty').value)||1)+1);updateBoxTotal()};
 document.getElementById('boxQty').addEventListener('input',updateBoxTotal);
-document.getElementById('addBox').onclick=()=>{if(!selectedBox)return;const q=Math.max(1,Math.min(BOX_MAX,parseInt(document.getElementById('boxQty').value,10)||1));save({mystery:{mode:'box',boxType:selectedBox,boxQty:q,qty:q*10}});document.getElementById('miniText').textContent=`${q} × Mystery Box · ${boxes[selectedBox].name} · ${euro(boxes[selectedBox].price*q)}`;document.getElementById('mini').classList.add('open')};
+document.getElementById('addBox').onclick=()=>{
+  if(!selectedBox)return;
+  const q=Math.max(1,Math.min(BOX_MAX,parseInt(document.getElementById('boxQty').value,10)||1)),items=readItems(),other=cartQty(items);
+  if(other+q*10>MAX){
+    document.getElementById('boxName').textContent='Maximal 4 Boxen / 40 Duftbäume pro Bestellung';
+    return;
+  }
+  const existing=items.find(i=>i.mode==='box'&&i.boxType===selectedBox);
+  if(existing) existing.boxQty=Math.min(BOX_MAX,Number(existing.boxQty||0)+q);
+  else items.push({mode:'box',boxType:selectedBox,boxQty:q});
+  saveItems(items);
+  document.getElementById('miniText').textContent=`${q} × Mystery Box · ${boxes[selectedBox].name} · ${euro(boxes[selectedBox].price*q)}`;
+  document.getElementById('mini').classList.add('open');
+};
 document.getElementById('continue').onclick=()=>document.getElementById('mini').classList.remove('open');
 document.addEventListener('DOMContentLoaded',()=>{updateCounts();render()});
+
 </script></body></html>

@@ -460,7 +460,7 @@ function render(){
   }
   saveItems(items);
   const el=document.getElementById('cart');if(!el)return;
-  if(!items.length){el.innerHTML='<div class="cart-box"><h2>Dein Warenkorb ist leer.</h2><p class="muted">Füge zuerst einen Mystery Duftbaum oder eine Mystery Box hinzu.</p><a class="btn primary" href="shop.html">ZUM SHOP</a></div>';return}
+  if(!items.length){el.innerHTML='<div class="cart-box"><h2>Dein Warenkorb ist leer.</h2><p class="muted">Füge zuerst einen Mystery Duftbaum oder ein Mystery 10er-Set hinzu.</p><a class="btn primary" href="shop.html">ZUM SHOP</a></div>';return}
   const q=items.reduce((s,i)=>s+itemQty(i),0);
   let sub=0,normal=0,lines='';
   items.forEach((m,index)=>{
@@ -468,7 +468,7 @@ function render(){
       const b=boxes[m.boxType]||boxes.pure,bq=Math.max(1,Math.min(BOX_MAX,Number(m.boxQty||1))),qty=bq*10,lineSub=b.price*bq;
       sub+=lineSub;normal+=qty*BASE;
       const maxForLine=Math.min(BOX_MAX,Math.floor((MAX-(q-qty))/10)+bq);
-      lines+='<div class="cart-line"><div><strong>Mystery Box · '+b.name+'</strong><div class="muted">'+bq+' Box(en) · '+qty+' Duftbäume</div></div><div class="cart-actions"><button type="button" class="small-btn cart-action" data-action="minus" data-index="'+index+'">−</button><input class="qty-input" data-action="input" data-index="'+index+'" value="'+bq+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button type="button" class="small-btn cart-action" data-action="plus" data-index="'+index+'" data-max="'+maxForLine+'">+</button></div><div><strong>'+euro(lineSub)+'</strong><br><button type="button" class="small-btn remove cart-action" data-action="remove" data-index="'+index+'">ENTFERNEN</button></div></div>';
+      lines+='<div class="cart-line"><div><strong>Mystery 10er-Set · '+b.name+'</strong><div class="muted">'+bq+' Box(en) · '+qty+' Duftbäume</div></div><div class="cart-actions"><button type="button" class="small-btn cart-action" data-action="minus" data-index="'+index+'">−</button><input class="qty-input" data-action="input" data-index="'+index+'" value="'+bq+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button type="button" class="small-btn cart-action" data-action="plus" data-index="'+index+'" data-max="'+maxForLine+'">+</button></div><div><strong>'+euro(lineSub)+'</strong><br><button type="button" class="small-btn remove cart-action" data-action="remove" data-index="'+index+'">ENTFERNEN</button></div></div>';
     }else{
       const nq=Math.max(1,Math.min(MAX,Number(m.qty||1))),lineSub=nq===40?129.90:nq*(tiers.find(t=>nq<=t.max)||tiers[0]).price;
       sub+=lineSub;normal+=nq*BASE;

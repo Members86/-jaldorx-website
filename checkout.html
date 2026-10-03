@@ -421,13 +421,13 @@ main{
 <div class="jdx-footer-copy">© 2026 JALDORX · Planungsversion</div>
 </div></footer><script>
 
-const MAX=40,BOX_MAX=4,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}],boxes={pure:{name:'Pure Mystery',price:38.90},one:{name:'1 guter garantiert',price:39.90},two:{name:'2 gute garantiert',price:42.90},nine:{name:'9 gute + 1 schlechter',price:46.90}};
+const MAX=40,BOX_MAX=4,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}],boxes={one:{name:'1 guter garantiert',price:39.90},two:{name:'2 gute garantiert',price:42.90},nine:{name:'9 gute + 1 schlechter',price:46.90}};
 function shipping(q,sub){if(sub>=99)return 0;return q<=10?3.49:5.99}
 const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
 function getItems(){
   try{
     const c=JSON.parse(localStorage.getItem('jaldorxCart')||'{}');
-    if(Array.isArray(c.items))return c.items.filter(Boolean);
+    if(Array.isArray(c.items))return c.items.filter(i=>i&&((i.mode==='normal')||(i.mode==='box'&&Object.prototype.hasOwnProperty.call(boxes,i.boxType))));
     const m=c.mystery||{};
     return m.mode==='box'&&m.boxType?[{mode:'box',boxType:m.boxType,boxQty:Math.max(1,Math.min(BOX_MAX,Number(m.boxQty||1)))}]:
       Number(m.qty||0)>0?[{mode:'normal',qty:Math.max(1,Math.min(MAX,Number(m.qty||0)))}]:[];
@@ -447,7 +447,7 @@ function render(){
   let sub=0,normal=0,detail='';
   items.forEach(m=>{
     if(m.mode==='box'){
-      const b=boxes[m.boxType]||boxes.pure,bq=Math.max(1,Math.min(BOX_MAX,Number(m.boxQty||1))),qty=bq*10,lineSub=b.price*bq;
+      const b=boxes[m.boxType],bq=Math.max(1,Math.min(BOX_MAX,Number(m.boxQty||1))),qty=bq*10,lineSub=b.price*bq;
       sub+=lineSub;normal+=qty*BASE;
       detail+='<p><strong>'+bq+' × Mystery 10er-Set · '+b.name+'</strong></p><p class="muted">'+qty+' Duftbäume insgesamt · '+euro(lineSub)+'</p>';
     }else{

@@ -449,7 +449,7 @@ function render(){
     if(m.mode==='box'){
       const b=boxes[m.boxType]||boxes.pure,bq=Math.max(1,Math.min(BOX_MAX,Number(m.boxQty||1))),qty=bq*10,lineSub=b.price*bq;
       sub+=lineSub;normal+=qty*BASE;
-      detail+='<p><strong>'+bq+' × Mystery Box · '+b.name+'</strong></p><p class="muted">'+qty+' Duftbäume insgesamt · '+euro(lineSub)+'</p>';
+      detail+='<p><strong>'+bq+' × Mystery 10er-Set · '+b.name+'</strong></p><p class="muted">'+qty+' Duftbäume insgesamt · '+euro(lineSub)+'</p>';
     }else{
       const nq=Math.max(1,Math.min(MAX,Number(m.qty||1))),lineSub=nq===40?129.90:nq*(tiers.find(t=>nq<=t.max)||tiers[0]).price;
       sub+=lineSub;normal+=nq*BASE;
@@ -457,7 +457,7 @@ function render(){
     }
   });
   const ship=shipping(q,sub),grand=sub+ship,free=ship===0,extra=Math.max(0,sub-normal);
-  document.getElementById('summary').innerHTML=detail+'<hr style="border-color:#ffffff12"><p>Warenwert: '+euro(sub)+'</p>'+(extra>0?'<p class="muted">Mystery-Box-Aufpreis: '+euro(extra)+'</p>':'')+'<p>Versand: '+(free?'Kostenlos ab 99 €':euro(ship))+'</p><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div>';
+  document.getElementById('summary').innerHTML=detail+'<hr style="border-color:#ffffff12"><p>Warenwert: '+euro(sub)+'</p>'+(extra>0?'<p class="muted">Mystery-Set-Aufpreis: '+euro(extra)+'</p>':'')+'<p>Versand: '+(free?'Kostenlos ab 99 €':euro(ship))+'</p><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div>';
   document.getElementById('checkout-form').onsubmit=e=>{
     e.preventDefault();
     if(!e.currentTarget.checkValidity()){e.currentTarget.reportValidity();return}

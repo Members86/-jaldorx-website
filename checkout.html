@@ -390,7 +390,13 @@ main{
   .payment label{padding:15px}
   .checkout-grid .btn{width:100%;min-height:50px}
 }
-</style><style id="jaldorx-page-height-fix">html,body{min-height:100%;}body{min-height:100vh;display:flex;flex-direction:column;}body>main{flex:1 0 auto;}body>footer{flex:0 0 auto;}</style><style id="jaldorx-page-height-final">.page,.legal-page{min-height:0!important}</style><style id="jaldorx-background-drop-final">/* Hintergrund leicht nach unten versetzt – Produkt oben vollständig sichtbar */body{background-position:center 55px!important}@media(max-width:760px){body{background-position:center 110px!important}}</style></head>
+</style><style id="jaldorx-page-height-fix">html,body{min-height:100%;}body{min-height:100vh;display:flex;flex-direction:column;}body>main{flex:1 0 auto;}body>footer{flex:0 0 auto;}</style><style id="jaldorx-page-height-final">.page,.legal-page{min-height:0!important}</style><style id="jaldorx-background-drop-final">/* Hintergrund leicht nach unten versetzt – Produkt oben vollständig sichtbar */body{background-position:center 55px!important}@media(max-width:760px){body{background-position:center 110px!important}}</style><style id="jaldorx-fixed-background-global">
+/* Globaler fester Hintergrund: Der Vordergrund scrollt, der Hintergrund bleibt stehen. */
+html{background:#050505!important}
+body{background-color:#050505!important;background-image:none!important;position:relative;isolation:isolate}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:url("mystery-background.jpg");background-size:100% auto;background-position:center 55px;background-repeat:no-repeat;background-attachment:scroll}
+@media(max-width:760px){body::before{background-position:center 110px}}
+</style></head>
 <body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header><div class="jdx-ship-banner">KOSTENLOSER VERSAND AB 99 € DEUTSCHLANDWEIT</div>
 <main><div class="wrap page"><div class="page-head"><div class="kicker">CHECKOUT</div><h1>DEINE<br><span>BESTELLUNG.</span></h1></div><div id="checkout-content"><div class="checkout-grid">
 <section class="card"><h2>Lieferadresse</h2><form id="checkout-form"><div class="fields">

@@ -425,11 +425,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="shop-layout"><div class="shop-visual"><img class="shop-product-image" src="mystery-hero.jpeg" alt="JALDORX MYSTERY DUFTBAUM"></div>
 <div class="product-card"><div class="muted">MYSTERY DUFTBAUM</div><div class="price" id="unitPrice">3,99 € / Stück</div><p class="muted">inkl. MwSt. · Versand wird an der Kasse berechnet</p><p class="muted">Maximal 40 Stück pro Online-Bestellung.</p>
 <div class="qty"><button type="button" id="minus">−</button><input id="qty" value="1" inputmode="numeric" autocomplete="off"><button type="button" id="plus">+</button></div><div id="warning" class="warning"></div>
-<div class="discount-box" id="discountBox"></div><button class="btn primary" id="add">IN DEN WARENKORB</button><section class="jdx-box-section"><div class="kicker">MYSTERY 10ER-SETS</div><h2>WIE VIEL MYSTERY WILLST DU?</h2><p class="muted jdx-box-intro">Wähle direkt bei jedem 10er-Set, wie oft du es möchtest. Du kannst verschiedene Sets kombinieren – insgesamt maximal 4 Sets.</p><p class="muted jdx-box-intro" style="margin-top:10px"><strong style="color:#fff">Hinweis:</strong> Jedes 10er-Set enthält 10 einzelne MYSTERY DUFTBÄUME. Es wird keine zusätzliche Box oder Geschenkbox geliefert.</p><div class="jdx-box-grid">
+<div class="discount-box" id="discountBox"></div><button class="btn primary" id="add">IN DEN WARENKORB</button><section class="jdx-box-section"><div class="kicker">MYSTERY 10ER-SETS</div><h2>WIE VIEL MYSTERY WILLST DU?</h2><p class="muted jdx-box-intro">Wähle direkt bei jedem 10er-Set, wie oft du es möchtest. Du kannst normale Duftbäume und verschiedene 10er-Sets miteinander kombinieren – insgesamt maximal 40 Duftbäume pro Bestellung.</p><p class="muted jdx-box-intro" style="margin-top:10px"><strong style="color:#fff">Hinweis:</strong> Jedes 10er-Set enthält 10 einzelne MYSTERY DUFTBÄUME. Es wird keine zusätzliche Box oder Geschenkbox geliefert.</p><div class="jdx-box-grid">
 <div class="jdx-box-option" data-box="one"><strong>🍀 1 GUTER GARANTIERT</strong><span>Mindestens 1 guter Duft ist garantiert.</span><b>39,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="one">−</button><input id="boxQtyOne" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 1 guter garantiert"><button type="button" data-box-plus="one">+</button><small>Sets</small></div></div>
 <div class="jdx-box-option" data-box="two"><strong>🍀🍀 2 GUTE GARANTIERT</strong><span>Mindestens 2 gute Düfte sind garantiert.</span><b>42,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="two">−</button><input id="boxQtyTwo" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 2 gute garantiert"><button type="button" data-box-plus="two">+</button><small>Sets</small></div></div>
 <div class="jdx-box-option" data-box="nine"><strong>👑 9 GUTE + 1 SCHLECHTER</strong><span>9 gute und 1 schlechter Duft sind garantiert.</span><b>46,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="nine">−</button><input id="boxQtyNine" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 9 gute und 1 schlechter"><button type="button" data-box-plus="nine">+</button><small>Sets</small></div></div>
-</div><div class="jdx-box-selected"><strong>DEINE AUSWAHL</strong><div class="jdx-box-selected-list" id="boxSelectionList"><span class="muted">Noch kein Set ausgewählt.</span></div><div class="jdx-box-selected-total"><span id="boxSelectionCount">0 Sets · 0 Duftbäume</span><b id="boxSelectionTotal">0,00 €</b></div><button class="btn primary" id="addBox" type="button" disabled style="width:100%;margin-top:16px">MYSTERY 10ER-SETS IN DEN WARENKORB</button></div></section></div></main>
+</div><div class="jdx-box-selected"><strong>DEINE AUSWAHL</strong><div class="jdx-box-selected-list" id="boxSelectionList"><span class="muted">Noch kein Set ausgewählt.</span></div><div class="jdx-box-selected-total"><span id="boxSelectionCount">0 Sets · 0 Duftbäume</span><b id="boxSelectionTotal">0,00 €</b></div><button class="btn primary" id="addBox" type="button" disabled style="width:100%;margin-top:16px">ALLE AUSGEWÄHLTEN IN DEN WARENKORB</button></div></section></div></main>
 <div class="mini-cart" id="mini"><h3>Im Warenkorb</h3><div id="miniText"></div><div class="mini-actions"><a class="btn primary" href="warenkorb.html">WARENKORB ANSEHEN / BEARBEITEN</a><button class="btn secondary" id="continue">WEITER SHOPPEN</button></div></div>
 <footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
@@ -460,10 +460,11 @@ function cartQty(items=readItems()){return items.reduce((sum,i)=>sum+itemQty(i),
 function saveItems(items){const clean=items.filter(i=>itemQty(i)>0),q=cartQty(clean),data=q?JSON.stringify({items:clean}):'{}';localStorage.setItem('jaldorxCart',data);localStorage.setItem('jaldorxCartQty',String(q));sessionStorage.setItem('jaldorxCartQty',String(q));document.cookie='jaldorxQty='+q+'; path=/; max-age=2592000; SameSite=Lax';updateCounts(q)}
 function updateCounts(q=cartQty()){document.querySelectorAll('.cart-count').forEach(e=>e.textContent=q)}
 const qty=document.getElementById('qty'),warning=document.getElementById('warning'),discountBox=document.getElementById('discountBox');
+let normalSelected=false;
 function render(){let q=parseInt(qty.value,10)||0;q=Math.max(1,Math.min(MAX,q));qty.value=q;warning.textContent='';document.getElementById('unitPrice').textContent=euro(unit(q))+' / Stück';const normal=q*BASE,saveAmt=normal-total(q);discountBox.innerHTML=q===40?'<strong>40 Stück: 129,90 € gesamt</strong><br><span class="muted">Maximaler Online-Rabatt erreicht.</span>':`Mengenpreis: <strong>${euro(unit(q))}</strong> pro Stück${saveAmt>0?`<br><span class="muted">Du sparst ${euro(saveAmt)} gegenüber dem Einzelpreis.</span>`:''}`}
-qty.addEventListener('input',()=>{let raw=qty.value.replace(/[^0-9]/g,'');if(raw===''){warning.textContent='Bitte eine Menge eingeben.';return}let n=parseInt(raw,10);if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;render()});
-document.getElementById('minus').onclick=()=>{qty.value=Math.max(1,(parseInt(qty.value)||1)-1);render()};
-document.getElementById('plus').onclick=()=>{let n=(parseInt(qty.value)||1)+1;if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;render()};
+qty.addEventListener('input',()=>{normalSelected=true;let raw=qty.value.replace(/[^0-9]/g,'');if(raw===''){warning.textContent='Bitte eine Menge eingeben.';return}let n=parseInt(raw,10);if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;render()});
+document.getElementById('minus').onclick=()=>{normalSelected=true;qty.value=Math.max(1,(parseInt(qty.value)||1)-1);render()};
+document.getElementById('plus').onclick=()=>{normalSelected=true;let n=(parseInt(qty.value)||1)+1;if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;render()};
 document.getElementById('add').onclick=()=>{const q=parseInt(qty.value,10)||0,items=readItems(),other=cartQty(items.filter(i=>i.mode!=='normal'));if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}if(other+q>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Reduziere zuerst die Mystery Boxen.';return}const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=q;else items.unshift({mode:'normal',qty:q});saveItems(items);document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum · ${euro(total(q))}`;document.getElementById('mini').classList.add('open')};
 
 const boxInputs={one:document.getElementById('boxQtyOne'),two:document.getElementById('boxQtyTwo'),nine:document.getElementById('boxQtyNine')};
@@ -471,14 +472,15 @@ const boxOrder=['one','two','nine'];
 const boxSelection={one:0,two:0,nine:0};
 function selectedBoxCount(){return boxOrder.reduce((s,k)=>s+boxSelection[k],0)}
 function updateBoxUI(){
-  const count=selectedBoxCount(),list=document.getElementById('boxSelectionList');
+  const count=selectedBoxCount(),normalQty=normalSelected?(parseInt(qty.value,10)||0):0,totalQty=count*10+normalQty,list=document.getElementById('boxSelectionList');
   list.innerHTML='';
-  if(!count)list.innerHTML='<span class="muted">Noch kein Set ausgewählt.</span>';
+  if(normalSelected&&normalQty>0){const chip=document.createElement('span');chip.className='jdx-box-chip';chip.textContent=normalQty+' × MYSTERY DUFTBAUM';list.appendChild(chip)}
   boxOrder.forEach(k=>{const n=boxSelection[k];if(!n)return;const chip=document.createElement('span');chip.className='jdx-box-chip';chip.textContent=n+' × '+boxes[k].name;list.appendChild(chip)});
-  document.getElementById('boxSelectionCount').textContent=count+' Sets · '+(count*10)+' Duftbäume';
-  let sum=0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
+  if(!list.children.length)list.innerHTML='<span class="muted">Noch keine Auswahl getroffen.</span>';
+  document.getElementById('boxSelectionCount').textContent=(count+(normalSelected&&normalQty>0?normalQty+' normale':0))+' · '+totalQty+' Duftbäume';
+  let sum=normalSelected&&normalQty>0?total(normalQty):0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
   document.getElementById('boxSelectionTotal').textContent=euro(sum);
-  document.getElementById('addBox').disabled=count===0;
+  document.getElementById('addBox').disabled=count===0&&!(normalSelected&&normalQty>0);
   boxOrder.forEach(k=>{boxInputs[k].value=boxSelection[k];boxInputs[k].setAttribute('aria-valuemax',String(boxSelection[k]+(BOX_MAX-count)));document.querySelector('.jdx-box-option[data-box="'+k+'"]').classList.toggle('active',boxSelection[k]>0)});
 }
 function setBoxQty(k,n){
@@ -493,14 +495,18 @@ boxOrder.forEach(k=>{
   document.querySelector('.jdx-box-option[data-box="'+k+'"]').addEventListener('click',e=>{if(e.target.closest('.jdx-box-qty'))return;setBoxQty(k,boxSelection[k]?0:1)});
 });
 document.getElementById('addBox').onclick=()=>{
-  const count=selectedBoxCount(),items=readItems(),existingQty=cartQty(items);
-  if(!count)return;
-  if(existingQty+count*10>MAX)return;
+  const count=selectedBoxCount(),normalQty=normalSelected?(parseInt(qty.value,10)||0):0,selectedQty=count*10+normalQty,items=readItems();
+  if(!selectedQty)return;
+  const existingWithoutSelection=cartQty(items)-(normalSelected?(items.find(i=>i.mode==='normal')?.qty||0):0);
+  if(existingWithoutSelection+selectedQty>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Reduziere zuerst deine Auswahl.';return}
+  if(normalSelected&&normalQty>0){const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=normalQty;else items.unshift({mode:'normal',qty:normalQty})}
   boxOrder.forEach(k=>{const n=boxSelection[k];if(!n)return;const existing=items.find(i=>i.mode==='box'&&i.boxType===k);if(existing)existing.boxQty=Math.min(BOX_MAX,Number(existing.boxQty||0)+n);else items.push({mode:'box',boxType:k,boxQty:n})});
   saveItems(items);
-  document.getElementById('miniText').textContent=count+' Mystery 10er-Set(s) · '+euro(boxOrder.reduce((s,k)=>s+boxSelection[k]*boxes[k].price,0));
+  let sum=normalQty>0?total(normalQty):0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
+  document.getElementById('miniText').textContent='Auswahl hinzugefügt · '+selectedQty+' Duftbäume · '+euro(sum);
   document.getElementById('mini').classList.add('open');
   boxOrder.forEach(k=>boxSelection[k]=0);
+  normalSelected=false;
   updateBoxUI();
 };
 document.getElementById('continue').onclick=()=>document.getElementById('mini').classList.remove('open');

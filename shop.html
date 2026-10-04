@@ -510,6 +510,18 @@ document.getElementById('addBox').onclick=()=>{
   updateBoxUI();
 };
 document.getElementById('continue').onclick=()=>document.getElementById('mini').classList.remove('open');
+function resetShopSelection(){
+  qty.value='1';
+  normalSelected=false;
+  boxOrder.forEach(k=>boxSelection[k]=0);
+  warning.textContent='';
+  document.getElementById('mini').classList.remove('open');
+  render();
+  updateBoxUI();
+}
 document.addEventListener('DOMContentLoaded',()=>{updateCounts();render();updateBoxUI()});
+window.addEventListener('pageshow',e=>{
+  if(e.persisted) resetShopSelection();
+});
 
 </script></body></html>

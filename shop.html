@@ -477,7 +477,7 @@ function updateBoxUI(){
   if(normalSelected&&normalQty>0){const chip=document.createElement('span');chip.className='jdx-box-chip';chip.textContent=normalQty+' × MYSTERY DUFTBAUM';list.appendChild(chip)}
   boxOrder.forEach(k=>{const n=boxSelection[k];if(!n)return;const chip=document.createElement('span');chip.className='jdx-box-chip';chip.textContent=n+' × '+boxes[k].name;list.appendChild(chip)});
   if(!list.children.length)list.innerHTML='<span class="muted">Noch keine Auswahl getroffen.</span>';
-  document.getElementById('boxSelectionCount').textContent=(count+(normalSelected&&normalQty>0?normalQty+' normale':0))+' · '+totalQty+' Duftbäume';
+  const selectionParts=[];if(normalSelected&&normalQty>0)selectionParts.push(normalQty+' normale');if(count>0)selectionParts.push(count+' Sets');document.getElementById('boxSelectionCount').textContent=selectionParts.join(' + ')+' · '+totalQty+' Duftbäume';
   let sum=normalSelected&&normalQty>0?total(normalQty):0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
   document.getElementById('boxSelectionTotal').textContent=euro(sum);
   document.getElementById('addBox').disabled=count===0&&!(normalSelected&&normalQty>0);

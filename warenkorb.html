@@ -435,7 +435,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="jdx-footer-copy">© 2026 JALDORX · Planungsversion</div>
 </div></footer><script>
 
-const MAX=40,BOX_MAX=4,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}],boxes={one:{name:'1 guter garantiert',price:39.90},two:{name:'2 gute garantiert',price:42.90},nine:{name:'9 gute + 1 schlechter',price:46.90}};
+const MAX=40,BOX_MAX=4,BASE=4.49,tiers=[{max:4,price:4.49},{max:9,price:4.29},{max:19,price:4.19},{max:29,price:4.09},{max:39,price:3.85}],boxes={one:{name:'1 guter garantiert',price:43.90},two:{name:'2 gute garantiert',price:45.90},nine:{name:'9 gute + 1 schlechter',price:47.90}};
 function shipping(q,sub){if(sub>=99)return 0;return q<=10?3.49:5.99}
 const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
 function getCart(){
@@ -479,10 +479,10 @@ function render(){
       const maxForLine=Math.min(BOX_MAX,Math.floor((MAX-(q-qty))/10)+bq);
       lines+='<div class="cart-line"><div><strong>Mystery 10er-Set · '+b.name+'</strong><div class="muted">'+bq+' Box(en) · '+qty+' Duftbäume</div></div><div class="cart-actions"><button type="button" class="small-btn cart-action" data-action="minus" data-index="'+index+'">−</button><input class="qty-input" data-action="input" data-index="'+index+'" value="'+bq+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button type="button" class="small-btn cart-action" data-action="plus" data-index="'+index+'" data-max="'+maxForLine+'">+</button></div><div><strong>'+euro(lineSub)+'</strong><br><button type="button" class="small-btn remove cart-action" data-action="remove" data-index="'+index+'">ENTFERNEN</button></div></div>';
     }else{
-      const nq=Math.max(1,Math.min(MAX,Number(m.qty||1))),lineSub=nq===40?129.90:nq*(tiers.find(t=>nq<=t.max)||tiers[0]).price;
+      const nq=Math.max(1,Math.min(MAX,Number(m.qty||1))),lineSub=nq===40?149.90:nq*(tiers.find(t=>nq<=t.max)||tiers[0]).price;
       sub+=lineSub;normal+=nq*BASE;
       const maxForLine=MAX-(q-nq);
-      lines+='<div class="cart-line"><div><strong>Mystery Duftbaum</strong><div class="muted">'+nq+' Stück · '+euro(nq===40?129.90/40:(tiers.find(t=>nq<=t.max)||tiers[0]).price)+' pro Stück</div></div><div class="cart-actions"><button type="button" class="small-btn cart-action" data-action="minus" data-index="'+index+'">−</button><input class="qty-input" data-action="input" data-index="'+index+'" value="'+nq+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button type="button" class="small-btn cart-action" data-action="plus" data-index="'+index+'" data-max="'+maxForLine+'">+</button></div><div><strong>'+euro(lineSub)+'</strong><br><button type="button" class="small-btn remove cart-action" data-action="remove" data-index="'+index+'">ENTFERNEN</button></div></div>';
+      lines+='<div class="cart-line"><div><strong>Mystery Duftbaum</strong><div class="muted">'+nq+' Stück · '+euro(nq===40?149.90/40:(tiers.find(t=>nq<=t.max)||tiers[0]).price)+' pro Stück</div></div><div class="cart-actions"><button type="button" class="small-btn cart-action" data-action="minus" data-index="'+index+'">−</button><input class="qty-input" data-action="input" data-index="'+index+'" value="'+nq+'" inputmode="numeric" style="width:70px;height:40px;text-align:center;background:#050505;color:#fff;border:1px solid #444;border-radius:8px"><button type="button" class="small-btn cart-action" data-action="plus" data-index="'+index+'" data-max="'+maxForLine+'">+</button></div><div><strong>'+euro(lineSub)+'</strong><br><button type="button" class="small-btn remove cart-action" data-action="remove" data-index="'+index+'">ENTFERNEN</button></div></div>';
     }
   });
   const ship=shipping(q,sub),grand=sub+ship,free=ship===0,normalDiscount=Math.max(0,normal-sub);

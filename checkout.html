@@ -430,7 +430,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="jdx-footer-copy">© 2026 JALDORX · Planungsversion</div>
 </div></footer><script>
 
-const MAX=40,BOX_MAX=4,BASE=3.99,tiers=[{max:4,price:3.99},{max:9,price:3.79},{max:19,price:3.69},{max:29,price:3.59},{max:39,price:3.35}],boxes={one:{name:'1 guter garantiert',price:39.90},two:{name:'2 gute garantiert',price:42.90},nine:{name:'9 gute + 1 schlechter',price:46.90}};
+const MAX=40,BOX_MAX=4,BASE=4.49,tiers=[{max:4,price:4.49},{max:9,price:4.29},{max:19,price:4.19},{max:29,price:4.09},{max:39,price:3.85}],boxes={one:{name:'1 guter garantiert',price:43.90},two:{name:'2 gute garantiert',price:45.90},nine:{name:'9 gute + 1 schlechter',price:47.90}};
 function shipping(q,sub){if(sub>=99)return 0;return q<=10?3.49:5.99}
 const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
 function getItems(){
@@ -460,9 +460,9 @@ function render(){
       sub+=lineSub;normal+=qty*BASE;
       detail+='<p><strong>'+bq+' × Mystery 10er-Set · '+b.name+'</strong></p><p class="muted">'+qty+' Duftbäume insgesamt · '+euro(lineSub)+'</p>';
     }else{
-      const nq=Math.max(1,Math.min(MAX,Number(m.qty||1))),lineSub=nq===40?129.90:nq*(tiers.find(t=>nq<=t.max)||tiers[0]).price;
+      const nq=Math.max(1,Math.min(MAX,Number(m.qty||1))),lineSub=nq===40?149.90:nq*(tiers.find(t=>nq<=t.max)||tiers[0]).price;
       sub+=lineSub;normal+=nq*BASE;
-      detail+='<p><strong>'+nq+' × Mystery Duftbaum</strong></p><p class="muted">'+euro(nq===40?129.90/40:(tiers.find(t=>nq<=t.max)||tiers[0]).price)+' pro Stück · '+euro(lineSub)+'</p>';
+      detail+='<p><strong>'+nq+' × Mystery Duftbaum</strong></p><p class="muted">'+euro(nq===40?149.90/40:(tiers.find(t=>nq<=t.max)||tiers[0]).price)+' pro Stück · '+euro(lineSub)+'</p>';
     }
   });
   const ship=shipping(q,sub),grand=sub+ship,free=ship===0,extra=Math.max(0,sub-normal);

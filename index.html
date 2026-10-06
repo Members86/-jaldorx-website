@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050505"><title>JALDORX — Mystery Duftbaum</title><style>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050505"><title>JALDORX — Eine Marke. Eine Idee.</title><style>
 :root{--bg:#050505;--fg:#fff;--muted:#aaa;--gold:#d7b43a;--cyan:#00d9ff;--pink:#ff1493;--yellow:#ffe500;--red:#e5232e}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 a{text-decoration:none;color:inherit}.wrap{width:min(1120px,calc(100% - 32px));margin:auto}
@@ -283,20 +283,132 @@ html{background:#050505!important}
 body{background-color:#050505!important;background-image:none!important;position:relative;isolation:isolate}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:url("mystery-background.jpg");background-size:100% auto;background-position:center 55px;background-repeat:no-repeat;transform:translateY(var(--jdx-bg-shift,0px));}
 </style>
-</head>
+<style id="jaldorx-home-neutral-final">
+.jdx-home-hero{min-height:720px;padding:110px 0 90px;display:flex;align-items:center;text-align:center;position:relative}
+.jdx-home-hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 48%,#ffffff0b,transparent 42%),linear-gradient(180deg,#05050522,#050505aa)}
+.jdx-home-hero .wrap{position:relative;z-index:1}
+.jdx-home-logo{font-size:clamp(76px,13vw,150px);font-weight:1000;letter-spacing:-.085em;line-height:.85;text-shadow:0 18px 60px #000}
+.jdx-home-logo b{color:var(--red)}
+.jdx-home-tag{margin:28px 0 12px;font-size:clamp(18px,2.5vw,28px);font-weight:800;letter-spacing:.22em}
+.jdx-home-sub{margin:0 auto;max-width:680px;color:#aaa;font-size:18px;line-height:1.6}
+.jdx-home-line{width:70px;height:3px;background:var(--red);margin:28px auto}
+.jdx-home-hero .buttons{justify-content:center}
+.jdx-home-product{padding:95px 0;border-top:1px solid #ffffff12}
+.jdx-home-product-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+.jdx-home-product-copy h2{font-size:clamp(44px,6vw,72px);margin:12px 0 18px}
+.jdx-home-product-copy h2 span{color:var(--gold)}
+.jdx-home-product-copy p{color:#bbb;font-size:18px;line-height:1.65;max-width:560px}
+.jdx-home-product-visual{min-height:420px;display:grid;place-items:center;position:relative}
+.jdx-home-product-visual:before{content:"";position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,var(--gold),transparent 68%);opacity:.12;filter:blur(28px)}
+.jdx-home-pouch{position:relative;width:235px;height:350px;border:1px solid #6d5b24;border-radius:9px;background:linear-gradient(145deg,#171717,#020202);box-shadow:0 35px 90px #000;display:grid;place-items:center;text-align:center;transform:rotate(2deg);z-index:1}
+.jdx-home-pouch .q{width:82px;height:82px;border:2px solid var(--gold);display:grid;place-items:center;transform:rotate(45deg);margin:10px auto 28px}
+.jdx-home-pouch .q span{transform:rotate(-45deg);font-size:42px;color:var(--gold)}
+.jdx-home-pouch strong{font-size:27px;color:#e5c65a;display:block}
+.jdx-home-pouch small{color:#bbb;font-weight:800;letter-spacing:.08em}
+.jdx-home-values{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12}
+.jdx-home-value{padding:34px 24px;text-align:center;border-right:1px solid #ffffff12}
+.jdx-home-value:last-child{border-right:0}
+.jdx-home-value strong{display:block;font-size:15px;letter-spacing:.12em}
+.jdx-home-value span{display:block;margin-top:8px;color:#777;font-size:13px}
+.jdx-home-about{padding:95px 0}
+.jdx-home-about-box{max-width:850px;margin:auto;text-align:center}
+.jdx-home-about-box h2{margin:12px 0 18px}
+.jdx-home-about-box p{color:#aaa;font-size:18px;line-height:1.7}
+.jdx-home-coming{padding:85px 0;text-align:center;border-top:1px solid #ffffff12}
+.jdx-home-coming-box{max-width:720px;margin:32px auto 0;padding:42px 28px;border:1px solid #ffffff18;border-radius:20px;background:#090909}
+.jdx-home-coming-box h3{font-size:clamp(27px,4vw,42px);margin:10px 0 12px}
+.jdx-home-coming-box p{color:#888;line-height:1.6;margin:0 auto 22px;max-width:520px}
+@media(max-width:760px){
+  .jdx-home-hero{min-height:650px;padding:85px 0 70px}
+  .jdx-home-logo{font-size:70px}
+  .jdx-home-tag{letter-spacing:.14em;font-size:17px}
+  .jdx-home-sub{font-size:16px}
+  .jdx-home-product{padding:70px 0}
+  .jdx-home-product-grid{grid-template-columns:1fr;gap:25px}
+  .jdx-home-product-visual{min-height:360px;order:-1}
+  .jdx-home-pouch{width:210px;height:315px}
+  .jdx-home-values{grid-template-columns:1fr}
+  .jdx-home-value{border-right:0;border-bottom:1px solid #ffffff12}
+  .jdx-home-value:last-child{border-bottom:0}
+  .jdx-home-about{padding:70px 0}
+  .jdx-home-coming{padding:65px 0}
+}
+</style></head>
 <body><header><div class="wrap nav"><a class="logo" href="index.html">JALDOR<b>X</b></a><nav class="navlinks"><a href="shop.html">SHOP</a><a href="info.html">INFO</a><a href="index.html#insider">INSIDER</a><a class="cart-link" href="warenkorb.html">🛒 <span class="cart-count">0</span></a></nav></div></header>
 <main>
-<section class="hero"><div class="wrap hero-grid"><div>
-<div class="kicker">MYSTERY DUFTBAUM</div><h1>Ein Duft.<br><span>Deine</span> Überraschung.</h1>
-<p>Gut oder eklig? Genau das weißt du erst, wenn du ihn öffnest.</p>
-<div class="buttons"><a class="btn primary" href="shop.html">MYSTERY ENTDECKEN</a><a class="btn secondary" href="#so-funktionierts">SO FUNKTIONIERT'S</a></div>
-</div><div class="product" aria-hidden="true"></div></div></section>
-<section class="block" id="konzept"><div class="wrap"><div class="kicker">DAS KONZEPT</div><h2>Kein Plan,<br>was dich erwartet.</h2><p class="lead">Genau das ist der Plan. Ein zufälliger Duft, ein echter Hingucker und eine Überraschung für alle, die mehr als den Standard wollen.</p><div class="grid2"><div class="card"><strong>Ein Duft. Eine Überraschung.</strong><p>Du weißt nicht, welcher Duft dich erwartet. Erst öffnen, dann entdecken.</p></div><div class="card"><strong>Für neugierige Menschen.</strong><p>Mystery statt Einheitsbrei – auswählen, öffnen und herausfinden.</p></div></div></div></section>
-<section class="block" id="so-funktionierts"><div class="wrap"><div class="kicker">SO FUNKTIONIERT'S</div><h2>Drei Schritte.<br>Eine Überraschung.</h2><div class="steps"><div class="step"><div class="num">01</div><h3>AUSWÄHLEN</h3><p>Deinen Mystery Duftbaum auswählen.</p></div><div class="step"><div class="num">02</div><h3>ÖFFNEN</h3><p>Verpackung öffnen und den Moment genießen.</p></div><div class="step"><div class="num">03</div><h3>ENTDECKEN</h3><p>Welcher Duft steckt wirklich dahinter?</p></div></div></div></section>
-<section class="block gold"><div class="wrap"><div class="kicker">DAS BESONDERE</div><div class="goldmark">◇</div><h2>DER GOLDENE<br>DIAMANT</h2><span class="soon">COMING SOON</span></div></section>
-<section class="block brand"><div class="wrap"><div class="kicker">DIE DACHMARKE</div><div class="brandname">JALDOR<b>X</b></div><p class="lead">JALDORX steht für Mut, Kreativität und Überraschung. Produkte, die anders sind.</p></div></section>
-<section class="block future"><div class="wrap"><div class="kicker">WAS KOMMT ALS NÄCHSTES?</div><h2>WEITERE PRODUKTE<br>• COMING SOON</h2><div class="futurebox">Hier entsteht Platz für die nächsten JALDORX-Produkte.</div></div></section>
-<section class="block insider" id="insider"><div class="wrap"><div class="insiderbox"><div><div class="kicker">JALDORX INSIDER</div><h2>Sei dabei.</h2><p class="lead">Neuigkeiten, neue Produkte und Überraschungen direkt von JALDORX.</p></div><div><p class="lead" style="margin:0 0 14px">Der JALDORX Insider kommt bald.</p><span class="soon">COMING SOON</span></div></div></div></section>
+<section class="jdx-home-hero">
+  <div class="wrap">
+    <div class="kicker">JALDORX</div>
+    <div class="jdx-home-logo">JALDOR<b>X</b></div>
+    <div class="jdx-home-tag">EINE MARKE. EINE IDEE.</div>
+    <div class="jdx-home-line"></div>
+    <p class="jdx-home-sub">Produkte, die anders sind. Modern, kreativ und mit dem gewissen Extra.</p>
+    <div class="buttons">
+      <a class="btn primary" href="shop.html">SHOP ENTDECKEN</a>
+      <a class="btn secondary" href="#ueber-jaldorx">JALDORX ENTDECKEN</a>
+    </div>
+  </div>
+</section>
+
+<section class="jdx-home-product">
+  <div class="wrap jdx-home-product-grid">
+    <div class="jdx-home-product-copy">
+      <div class="kicker">UNSER ERSTES PRODUKT</div>
+      <h2>MYSTERY<br><span>DUFTBAUM</span></h2>
+      <p>Ein Duft. Deine Überraschung. Du weißt nicht, was dich erwartet – genau das macht den MYSTERY DUFTBAUM aus.</p>
+      <div class="buttons">
+        <a class="btn primary" href="shop.html">JETZT ENTDECKEN</a>
+      </div>
+    </div>
+    <div class="jdx-home-product-visual" aria-label="MYSTERY DUFTBAUM">
+      <div class="jdx-home-pouch">
+        <div>
+          <small>JALDORX</small>
+          <div class="q"><span>?</span></div>
+          <strong>MYSTERY<br>DUFTBAUM</strong>
+          <small>EIN DUFT. DEINE ÜBERRASCHUNG.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="jdx-home-values">
+  <div class="jdx-home-value"><strong>DESIGN</strong><span>Markant. Modern. Eigenständig.</span></div>
+  <div class="jdx-home-value"><strong>QUALITÄT</strong><span>Mit Anspruch entwickelt.</span></div>
+  <div class="jdx-home-value"><strong>IDEEN</strong><span>Anders denken. Neues ausprobieren.</span></div>
+</section>
+
+<section class="jdx-home-about" id="ueber-jaldorx">
+  <div class="wrap jdx-home-about-box">
+    <div class="kicker">ÜBER JALDORX</div>
+    <h2>MEHR ALS NUR<br>EIN PRODUKT.</h2>
+    <p>JALDORX ist eine junge Marke mit dem Anspruch, Produkte zu entwickeln, die auffallen und im Kopf bleiben. Der MYSTERY DUFTBAUM ist der Anfang. Was danach kommt, entscheiden die Ideen.</p>
+  </div>
+</section>
+
+<section class="jdx-home-coming">
+  <div class="wrap">
+    <div class="kicker">WAS KOMMT ALS NÄCHSTES?</div>
+    <div class="jdx-home-coming-box">
+      <span class="soon">COMING SOON</span>
+      <h3>NOCH MEHR JALDORX.</h3>
+      <p>Neue Produkte, neue Ideen und besondere Aktionen sind bereits in Planung.</p>
+      <span class="soon">COMING SOON</span>
+    </div>
+  </div>
+</section>
+
+<section class="jdx-home-coming" id="insider">
+  <div class="wrap">
+    <div class="kicker">JALDORX INSIDER</div>
+    <div class="jdx-home-coming-box">
+      <h3>BLEIB AUF DEM LAUFENDEN.</h3>
+      <p>Der JALDORX Insider kommt später. Bis dahin findest du die aktuellen Produkte direkt im Shop.</p>
+      <a class="btn secondary" href="shop.html">ZUM SHOP</a>
+    </div>
+  </div>
+</section>
 </main><footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
 <div class="jdx-footer-social"><strong>SOCIAL</strong><div class="jdx-socials">

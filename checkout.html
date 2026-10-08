@@ -467,14 +467,53 @@ function render(){
   });
   const ship=shipping(q,sub),grand=sub+ship,free=ship===0,extra=Math.max(0,sub-normal);
   document.getElementById('summary').innerHTML=detail+'<hr style="border-color:#ffffff12"><p>Warenwert: '+euro(sub)+'</p>'+(extra>0?'<p class="muted">Mystery-Set-Aufpreis: '+euro(extra)+'</p>':'')+'<p>Versand: '+(free?'Kostenlos ab 99 €':euro(ship))+'</p><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div>';
-  document.getElementById('checkout-form').onsubmit=e=>{
+  document.getElementById('checkout-form').onsubmit=async e=>{
     e.preventDefault();
-    if(!e.currentTarget.checkValidity()){e.currentTarget.reportValidity();return}
-    const order='JX-'+String(Math.floor(Math.random()*900000)+100000);
-    clearCart();
-    document.getElementById('checkout-content').style.display='none';
-    document.getElementById('success').classList.add('open');
-    document.getElementById('successText').textContent=`Deine Bestellnummer ist ${order}. Dies ist aktuell eine Testbestellung – es wurde keine Zahlung ausgelöst.`;
+    const form=e.currentTarget;
+    const errorEl=document.getElementById('error');
+    errorEl.textContent='';
+    if(!form.checkValidity()){form.reportValidity();return}
+
+    const inputs=form.querySelectorAll('input');
+    const firstName=inputs[0]?.value.trim()||'';
+    const lastName=inputs[1]?.value.trim()||'';
+    const street=inputs[2]?.value.trim()||'';
+    const postalCode=inputs[3]?.value.trim()||'';
+    const city=inputs[4]?.value.trim()||'';
+    const email=inputs[5]?.value.trim()||'';
+    const payment=document.querySelector('input[name="payment"]:checked')?.parentElement?.textContent.trim()||'test';
+
+    const submit=form.querySelector('button[type="submit"]');
+    submit.disabled=true;
+    submit.textContent='BESTELLUNG WIRD GESPEICHERT …';
+
+    try{
+      const response=await fetch('api/order.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          customer:{firstName,lastName,street,postalCode,city,email},
+          paymentMethod:payment,
+          items
+        })
+      });
+      const result=await response.json().catch(()=>null);
+      if(!response.ok || !result || !result.ok){
+        if(result?.error==='INSUFFICIENT_STOCK'){
+          throw new Error('Leider sind aktuell nur '+Number(result.available||0)+' Duftbäume auf Lager.');
+        }
+        throw new Error('Die Bestellung konnte momentan nicht gespeichert werden. Bitte versuche es erneut.');
+      }
+
+      clearCart();
+      document.getElementById('checkout-content').style.display='none';
+      document.getElementById('success').classList.add('open');
+      document.getElementById('successText').textContent=`Deine Bestellnummer ist ${result.orderNumber}. Die Bestellung wurde erfasst. Gesamt: ${euro(result.total)}.`;
+    }catch(err){
+      errorEl.textContent=err.message||'Die Bestellung konnte momentan nicht gespeichert werden.';
+      submit.disabled=false;
+      submit.textContent='TESTBESTELLUNG ABSENDEN';
+    }
   };
 }
 document.addEventListener('DOMContentLoaded',render);

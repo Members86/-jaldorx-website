@@ -1,44 +1,81 @@
 <?php
-declare(strict_types=1);
 session_start();
 
-$configFile = __DIR__ . '/api/config.php';
-if (!is_file($configFile)) { http_response_code(500); exit('Konfiguration fehlt.'); }
-require $configFile;
-if (!isset($pdo) || !($pdo instanceof PDO)) { http_response_code(500); exit('Datenbank nicht konfiguriert.'); }
+require __DIR__ . '/api/config.php';
 
-$adminPassword = defined('JALDORX_ADMIN_PASSWORD') ? JALDORX_ADMIN_PASSWORD : '';
-if ($adminPassword === '') { http_response_code(500); exit('Admin-Passwort fehlt in api/config.php.'); }
+if (!isset($pdo)) {
+    exit('Datenbankverbindung fehlt.');
+}
 
-if (isset($_POST['logout'])) { $_SESSION = []; session_destroy(); header('Location: admin.php'); exit; }
+if (isset($_POST['logout'])) {
+    session_destroy();
+    header('Location: admin.php');
+    exit;
+}
 
-if (!isset($_SESSION['jdx_admin'])) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
-        if (hash_equals($adminPassword, (string)$_POST['password'])) {
-            $_SESSION['jdx_admin'] = true;
-            header('Location: admin.php'); exit;
+if (!isset($_SESSION['jaldorx_admin'])) {
+    if (isset($_POST['password'])) {
+        if (hash_equals(JALDORX_ADMIN_PASSWORD, (string)$_POST['password'])) {
+            $_SESSION['jaldorx_admin'] = true;
+            header('Location: admin.php');
+            exit;
         }
-        $loginError = 'Falsches Passwort.';
+        $error = 'Falsches Passwort.';
     }
-    ?><!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JALDORX Admin</title>
-    <style>body{margin:0;background:#050505;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;min-height:100vh;display:grid;place-items:center}.box{width:min(420px,calc(100% - 32px));padding:30px;border:1px solid #ffffff20;border-radius:18px;background:#0b0b0b}h1{margin-top:0}.logo{font-weight:900;font-size:24px;margin-bottom:25px}.logo b{color:#e5232e}input,button{width:100%;box-sizing:border-box;padding:14px;border-radius:10px;margin-top:10px;font-size:16px}input{background:#050505;color:#fff;border:1px solid #444}button{background:#fff;color:#000;border:0;font-weight:900}.err{color:#ff8b8b;margin-top:12px}</style></head><body><form class="box" method="post"><div class="logo">JALDOR<b>X</b> ADMIN</div><h1>Anmeldung</h1><input type="password" name="password" placeholder="Admin-Passwort" autocomplete="current-password" required><button type="submit">ANMELDEN</button><?php if(!empty($loginError)) echo '<div class="err">'.htmlspecialchars($loginError,ENT_QUOTES,'UTF-8').'</div>'; ?></form></body></html><?php exit;
+
+    echo '<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JALDORX Admin</title><style>body{margin:0;background:#050505;color:white;font-family:Arial;display:grid;place-items:center;min-height:100vh}.box{width:min(420px,calc(100% - 40px));padding:30px;background:#0b0b0b;border:1px solid #333;border-radius:18px}input,button{width:100%;padding:15px;margin-top:12px;box-sizing:border-box;border-radius:10px;font-size:16px}input{background:#050505;color:white;border:1px solid #555}button{background:white;color:black;border:0;font-weight:bold}.red{color:#ff7777;margin-top:12px}</style><form class="box" method="post"><h1>JALDORX <span style="color:#e5232e">X</span> ADMIN</h1><h2>Anmeldung</h2><input type="password" name="password" placeholder="Admin-Passwort" required><button>ANMELDEN</button>'.(!empty($error)?'<div class="red">'.htmlspecialchars($error).'</div>':'').'</form></html>';
+    exit;
 }
 
-$message='';
-if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['stock'])) {
-    $stock=max(0,(int)$_POST['stock']);
-    $stmt=$pdo->prepare("UPDATE inventory SET stock=? WHERE sku=?");
-    $stmt->execute([$stock,'MYSTERY-DUFTBAUM']);
-    $message='Lagerbestand gespeichert.';
+try {
+    if (isset($_POST['stock'])) {
+        $stock = max(0, (int)$_POST['stock']);
+        $stmt = $pdo->prepare('UPDATE inventory SET stock = ? LIMIT 1');
+        $stmt->execute([$stock]);
+        $saved = true;
+    }
+
+    $row = $pdo->query('SELECT stock FROM inventory LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+    $stock = $row ? (int)$row['stock'] : 0;
+} catch (Throwable $e) {
+    http_response_code(500);
+    exit('Admin-Datenbankfehler: ' . htmlspecialchars($e->getMessage()));
 }
 
-$inventory=$pdo->query("SELECT stock,reserved FROM inventory WHERE sku='MYSTERY-DUFTBAUM' LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-if (!$inventory) { http_response_code(500); exit('Lagerbestand für MYSTERY-DUFTBAUM wurde nicht gefunden.'); }
-$stock=(int)$inventory['stock'];
-$reserved=(int)$inventory['reserved'];
-function h($v){return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
-?><!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JALDORX Admin</title>
-<style>:root{--gold:#d7b43a;--red:#e5232e}*{box-sizing:border-box}body{margin:0;background:#050505;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}.wrap{width:min(900px,calc(100% - 28px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;padding:22px 0;border-bottom:1px solid #ffffff15}.logo{font-size:24px;font-weight:900}.logo b{color:var(--red)}button{border:0;border-radius:9px;padding:11px 15px;font-weight:900;cursor:pointer}.logout{background:#151515;color:#fff;border:1px solid #333}.card{background:#0b0b0b;border:1px solid #ffffff18;border-radius:16px;padding:24px;margin:28px 0}.big{font-size:52px;font-weight:900;color:var(--gold)}label{display:block;color:#aaa;margin:18px 0 8px}input[type=number]{width:100%;padding:13px;background:#050505;color:#fff;border:1px solid #444;border-radius:9px;font-size:18px;margin-bottom:10px}.save{background:#fff;color:#000}.ok{color:#8cffad;margin:18px 0}.hint{color:#aaa;line-height:1.5}@media(max-width:760px){.big{font-size:42px}}</style></head><body><div class="wrap"><div class="top"><div class="logo">JALDOR<b>X</b> ADMIN</div><form method="post"><button class="logout" name="logout" value="1">ABMELDEN</button></form></div>
-<section class="card"><h1>Lagerbestand</h1><h2>MYSTERY DUFTBAUM</h2><div class="big"><?php echo $stock; ?></div><p>Stück auf Lager</p><p>Reserviert: <strong><?php echo $reserved; ?></strong></p><p>Verfügbar: <strong><?php echo max(0,$stock-$reserved); ?></strong></p><form method="post"><label>Bestand ändern</label><input type="number" name="stock" min="0" value="<?php echo $stock; ?>" required><button class="save" type="submit">BESTAND SPEICHERN</button></form><?php if($message) echo '<div class="ok">'.h($message).'</div>'; ?></section>
-<section class="card"><h2>Was hier später dazukommt</h2><p class="hint">Bestellungen, Zahlungsstatus, Versandstatus und weitere Produkte bauen wir danach hier ein. Der bestehende Shop und Warenkorb bleiben dabei unangetastet.</p></section>
-</div></body></html>
+?><!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JALDORX Admin</title>
+<style>
+body{margin:0;background:#050505;color:#fff;font-family:Arial,sans-serif}
+.wrap{width:min(700px,calc(100% - 30px));margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;padding:22px 0;border-bottom:1px solid #333}
+.logo{font-size:24px;font-weight:900}.logo span{color:#e5232e}
+.card{margin-top:28px;background:#0b0b0b;border:1px solid #333;border-radius:18px;padding:25px}
+.stock{font-size:56px;font-weight:900;color:#d7b43a}
+input{width:100%;box-sizing:border-box;padding:14px;background:#050505;color:white;border:1px solid #555;border-radius:9px;font-size:18px;margin:10px 0}
+button{padding:12px 18px;border:0;border-radius:9px;font-weight:bold}
+.save{background:white;color:black}.logout{background:#151515;color:white;border:1px solid #444}
+.ok{color:#7dff9b;margin-top:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><div class="logo">JALDOR<span>X</span> ADMIN</div><form method="post"><button class="logout" name="logout" value="1">ABMELDEN</button></form></div>
+<div class="card">
+<h1>Lagerbestand</h1>
+<h2>MYSTERY DUFTBAUM</h2>
+<div class="stock"><?php echo $stock; ?></div>
+<p>Stück auf Lager</p>
+<form method="post">
+<label>Neuen Bestand eingeben</label>
+<input type="number" name="stock" min="0" value="<?php echo $stock; ?>" required>
+<button class="save" type="submit">BESTAND SPEICHERN</button>
+</form>
+<?php if (!empty($saved)) echo '<div class="ok">Lagerbestand gespeichert.</div>'; ?>
+</div>
+</div>
+</body>
+</html>

@@ -61,8 +61,9 @@ try {
         $message = 'Lagerbestand gespeichert.';
     }
 
-    $inventoryRow = $pdo->query("SELECT * FROM inventory WHERE sku = 'MYSTERY-DUFTBAUM' LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-    if (!$inventoryRow) $inventoryRow = $pdo->query('SELECT * FROM inventory LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+    // Die vorhandene inventory-Tabelle hat offenbar keine sku-Spalte.
+    // Daher den vorhandenen Lagerbestand ohne SKU-Filter laden.
+    $inventoryRow = $pdo->query('SELECT * FROM inventory LIMIT 1')->fetch(PDO::FETCH_ASSOC);
     $stock = $inventoryRow ? (int)($inventoryRow['stock'] ?? 0) : 0;
     $reserved = $inventoryRow ? (int)($inventoryRow['reserved'] ?? 0) : 0;
 

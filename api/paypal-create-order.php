@@ -180,7 +180,17 @@ try {
         if($st && ($st['payment_status']??'')==='pending') {
           if(in_array('sku',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'"); $release->execute([$treeQty]); }
           elseif(isset($productId) && $productId!==null && in_array('product_id',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?"); $release->execute([$treeQty,$productId]); }
-          else { throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED'); }
+          else {
+            // Same id-based fallback as the reservation path above. Release only
+            // the exact row and only when enough quantity is still reserved.
+            $invIdStmt=$pdo->query("SELECT id FROM inventory ORDER BY id ASC LIMIT 1 FOR UPDATE");
+            $invId=(int)$invIdStmt->fetchColumn();
+            if($invId<1) throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED');
+            $release=$pdo->prepare("UPDATE inventory SET reserved=reserved-? WHERE id=? AND reserved>=?");
+            $release->execute([$treeQty,$invId,$treeQty]);
+            if($release->rowCount()!==1) throw new RuntimeException('RESERVATION_RELEASE_FAILED');
+          }
+          if(!isset($release) || $release->rowCount()!==1) throw new RuntimeException('RESERVATION_RELEASE_FAILED');
           $pdo->prepare("UPDATE orders SET payment_status='failed', status='failed' WHERE id=?")->execute([$orderId]);
         }
         $pdo->commit();

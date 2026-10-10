@@ -18,10 +18,14 @@ try {
     $cfg = jdxPayPalConfig();
     if ($cfg['mode'] !== 'sandbox') jdxJsonError('SANDBOX_ONLY', 503);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $data = json_decode(file_get_contents('php://input') ?: '', true);
+    $rawBody=file_get_contents('php://input') ?: '';
+    if(strlen($rawBody)>20000) jdxJsonError('REQUEST_TOO_LARGE',413);
+    $data = json_decode($rawBody, true);
     if (!is_array($data)) jdxJsonError('INVALID_JSON');
     $customer = $data['customer'] ?? [];
     $items = $data['items'] ?? [];
+    if(!is_array($customer)) jdxJsonError('INVALID_CUSTOMER_DATA');
+    if(!is_array($items) || count($items)>20) jdxJsonError('INVALID_CART');
     foreach (['firstName','lastName','street','postalCode','city','email'] as $key) {
         if (!is_string($customer[$key] ?? null) || trim($customer[$key]) === '') jdxJsonError('MISSING_CUSTOMER_DATA');
     }

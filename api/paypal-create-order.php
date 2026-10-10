@@ -30,6 +30,7 @@ try {
         if (!is_string($customer[$key] ?? null) || trim($customer[$key]) === '') jdxJsonError('MISSING_CUSTOMER_DATA');
     }
     if (!filter_var($customer['email'], FILTER_VALIDATE_EMAIL)) jdxJsonError('INVALID_EMAIL');
+    if (($data['acceptedTerms'] ?? false) !== true) jdxJsonError('TERMS_NOT_ACCEPTED', 422);
     if (!is_array($items) || !$items) jdxJsonError('EMPTY_CART');
 
     $tiers = [['max'=>4,'price'=>4.49],['max'=>9,'price'=>4.29],['max'=>19,'price'=>4.19],['max'=>29,'price'=>4.09],['max'=>39,'price'=>3.85]];

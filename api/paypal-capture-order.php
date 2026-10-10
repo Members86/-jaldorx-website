@@ -19,16 +19,29 @@ try {
   $st->execute([$paypalId]); $order=$st->fetch(PDO::FETCH_ASSOC);
   if(!$order) { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_FOUND',404); }
   if(($order['payment_status']??'')==='paid') { $pdo->commit(); echo json_encode(['ok'=>true,'orderNumber'=>$order['order_number']??'','alreadyPaid'=>true]); exit; }
-  if(($order['payment_status']??'')!=='pending') { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_PAYABLE',409); }
-  if(!empty($order['reservation_expires_at']) && strtotime((string)$order['reservation_expires_at']) < time()) {
+  $paymentState=(string)($order['payment_status']??'');
+  if(!in_array($paymentState,['pending','capturing'],true)) { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_PAYABLE',409); }
+  if($paymentState==='pending' && !empty($order['reservation_expires_at']) && strtotime((string)$order['reservation_expires_at']) < time()) {
     $pdo->rollBack(); jdxCaptureError('RESERVATION_EXPIRED',409);
   }
-  $st=$pdo->prepare("UPDATE orders SET payment_status='capturing' WHERE id=? AND payment_status='pending'");
-  $st->execute([(int)$order['id']]);
-  if($st->rowCount()!==1) { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_PAYABLE',409); }
+  if($paymentState==='pending') {
+    $st=$pdo->prepare("UPDATE orders SET payment_status='capturing' WHERE id=? AND payment_status='pending'");
+    $st->execute([(int)$order['id']]);
+    if($st->rowCount()!==1) { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_PAYABLE',409); }
+  }
   $pdo->commit();
 
-  $captured=jdxPayPalRequest('POST','/v2/checkout/orders/'.$paypalId.'/capture');
+  // Reconcile with PayPal first. If an earlier capture succeeded but the response
+  // was lost, do not issue a second capture or reset local state to pending.
+  $paypalState=jdxPayPalRequest('GET','/v2/checkout/orders/'.$paypalId);
+  $paypalStatus=(string)($paypalState['status']??'');
+  if($paypalStatus==='COMPLETED') {
+    $captured=$paypalState;
+  } elseif($paypalStatus==='APPROVED') {
+    $captured=jdxPayPalRequest('POST','/v2/checkout/orders/'.$paypalId.'/capture');
+  } else {
+    jdxCaptureError('PAYMENT_NOT_CONFIRMED',402);
+  }
   $status=(string)($captured['status']??'');
   $unit=$captured['purchase_units'][0]??[];
   $capture=$unit['payments']['captures'][0]??[];
@@ -36,7 +49,7 @@ try {
   $amount=$capture['amount']??[];
   $expected=number_format((float)($order['total']??0),2,'.','');
   if($status!=='COMPLETED' || $captureStatus!=='COMPLETED' || ($amount['currency_code']??'')!=='EUR' || number_format((float)($amount['value']??0),2,'.','')!==$expected) {
-    $pdo->prepare("UPDATE orders SET payment_status='pending' WHERE id=? AND payment_status='capturing'")->execute([(int)$order['id']]);
+    // Keep the order in 'capturing' until a later request can safely reconcile it.
     jdxCaptureError('PAYMENT_NOT_CONFIRMED',402);
   }
   $itemStmt=$pdo->prepare("SELECT COALESCE(SUM(tree_quantity),0) AS trees FROM order_items WHERE order_id=?");

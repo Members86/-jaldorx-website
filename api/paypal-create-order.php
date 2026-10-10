@@ -32,14 +32,34 @@ try {
     $boxes = ['two'=>['name'=>'2 gute garantiert','price'=>43.90], 'four'=>['name'=>'4 gute garantiert','price'=>45.90], 'six'=>['name'=>'6 gute garantiert','price'=>47.90], 'nine'=>['name'=>'9 gute + 1 schlechter','price'=>49.90]];
     $normalPrice = static function(int $q) use ($tiers): float { if ($q===40) return 149.90; foreach($tiers as $t) if($q <= $t['max']) return $t['price']; throw new RuntimeException('INVALID_QUANTITY'); };
     $normalized=[]; $treeQty=0; $subtotal=0.0;
+    // Reject malformed/unknown cart entries instead of silently dropping them.
     foreach($items as $item) {
-        if (!is_array($item)) continue;
+        if (!is_array($item)) jdxJsonError('INVALID_CART_ITEM');
+        $mode=$item['mode'] ?? '';
+        if ($mode === 'normal') {
+            $q=(int)($item['qty'] ?? 0);
+            if($q<1 || $q>40) jdxJsonError('INVALID_QUANTITY');
+            $treeQty += $q;
+        } elseif ($mode === 'box') {
+            $boxType=$item['boxType'] ?? '';
+            if (!is_string($boxType) || !isset($boxes[$boxType])) jdxJsonError('INVALID_BOX_TYPE');
+            $bq=(int)($item['boxQty'] ?? 0);
+            if($bq<1 || $bq>4) jdxJsonError('INVALID_SET_QUANTITY');
+            $treeQty += $bq*10;
+        } else {
+            jdxJsonError('INVALID_CART_ITEM');
+        }
+    }
+    if($treeQty<1 || $treeQty>40) jdxJsonError('MAX_40_TREES');
+    // Only after validating the entire cart do we calculate server-side prices.
+    $treeQty=0;
+    foreach($items as $item) {
         if (($item['mode'] ?? '') === 'normal') {
             $q=(int)($item['qty'] ?? 0); if($q<1 || $q>40) jdxJsonError('INVALID_QUANTITY');
             $unit=$normalPrice($q); $line=$q===40?149.90:$q*$unit;
             $normalized[]=['type'=>'normal','code'=>'MYSTERY-DUFTBAUM','name'=>'MYSTERY DUFTBAUM','quantity'=>$q,'unit_price'=>$q===40?149.90/40:$unit,'line_total'=>$line,'tree_quantity'=>$q];
             $treeQty += $q; $subtotal += $line;
-        } elseif (($item['mode'] ?? '') === 'box' && isset($boxes[$item['boxType']])) {
+        } elseif (($item['mode'] ?? '') === 'box') {
             $bq=(int)($item['boxQty'] ?? 0); if($bq<1 || $bq>4) jdxJsonError('INVALID_SET_QUANTITY');
             $b=$boxes[$item['boxType']]; $q=$bq*10; $line=$b['price']*$bq;
             $normalized[]=['type'=>'box','code'=>'set_'.$item['boxType'],'name'=>'Mystery 10er-Set · '.$b['name'],'quantity'=>$bq,'unit_price'=>$b['price'],'line_total'=>$line,'tree_quantity'=>$q];

@@ -195,18 +195,17 @@ try {
 
     $orderData = [
         'order_number' => $orderNumber,
-        'customer_first_name' => $clean($customer['firstName'], 100),
-        'customer_last_name' => $clean($customer['lastName'], 100),
+        'customer_name' => $clean($customer['firstName'], 100) . ' ' . $clean($customer['lastName'], 100),
         'street' => $clean($customer['street'], 255),
         'postal_code' => $clean($customer['postalCode'], 20),
         'city' => $clean($customer['city'], 120),
         'country' => 'Deutschland',
-        'email' => $clean($customer['email'], 255),
+        'customer_email' => $clean($customer['email'], 255),
         'payment_method' => $clean($data['paymentMethod'] ?? 'test', 50),
         'quantity' => $treeQty,
-        'merchandise_total' => number_format($merchandiseTotal, 2, '.', ''),
-        'shipping_total' => number_format($shipping, 2, '.', ''),
-        'grand_total' => number_format($grandTotal, 2, '.', ''),
+        'subtotal' => number_format($merchandiseTotal, 2, '.', ''),
+        'shipping' => number_format($shipping, 2, '.', ''),
+        'total' => number_format($grandTotal, 2, '.', ''),
         'status' => 'open'
     ];
 
@@ -217,8 +216,9 @@ try {
             'order_id' => $orderId,
             'product_id' => $productId,
             'item_type' => $line['type'],
-            'item_code' => $line['code'],
-            'item_name' => $line['name'],
+            'sku' => $line['code'],
+            'product_name' => $line['name'],
+            'variant' => $line['type'],
             'quantity' => $line['quantity'],
             'unit_price' => number_format($line['unit_price'], 2, '.', ''),
             'line_total' => number_format($line['line_total'], 2, '.', ''),

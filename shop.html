@@ -430,7 +430,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="jdx-box-option" data-box="four"><strong>🍀🍀🍀🍀 4 GUTE GARANTIERT</strong><span>Mindestens 4 gute Düfte sind garantiert.</span><b>45,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="four">−</button><input id="boxQtyFour" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 4 gute garantiert"><button type="button" data-box-plus="four">+</button><small>Sets</small></div></div>
 <div class="jdx-box-option" data-box="six"><strong>🟢 6 GUTE GARANTIERT</strong><span>Mindestens 6 gute Düfte sind garantiert.</span><b>47,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="six">−</button><input id="boxQtySix" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 6 gute garantiert"><button type="button" data-box-plus="six">+</button><small>Sets</small></div></div>
 <div class="jdx-box-option" data-box="nine"><strong>👑 9 GUTE + 1 SCHLECHTER</strong><span>9 gute und 1 schlechter Duft sind garantiert.</span><b>49,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="nine">−</button><input id="boxQtyNine" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 9 gute und 1 schlechter"><button type="button" data-box-plus="nine">+</button><small>Sets</small></div></div>
-</div><div class="jdx-box-selected"><strong>DEINE AUSWAHL</strong><div class="jdx-box-selected-list" id="boxSelectionList"><span class="muted">Noch kein Set ausgewählt.</span></div><div class="jdx-box-selected-total"><span id="boxSelectionCount">0 Sets · 0 Duftbäume</span><b id="boxSelectionTotal">0,00 €</b></div><button class="btn primary" id="addBox" type="button" disabled style="width:100%;margin-top:16px">ALLE AUSGEWÄHLTEN IN DEN WARENKORB</button></div></section></div></main>
+</div><div class="jdx-box-selected"><strong>DEINE AUSWAHL</strong><div class="jdx-box-selected-list" id="boxSelectionList"><span class="muted">Noch kein Set ausgewählt.</span></div><div class="jdx-box-selected-total"><span id="boxSelectionCount">0 Sets · 0 Duftbäume</span><b><small style="display:block;color:#aaa;font-size:12px;font-weight:600">Preis dieser Auswahl</small><span id="boxSelectionTotal">0,00 €</span></b></div><button class="btn primary" id="addBox" type="button" disabled style="width:100%;margin-top:16px">ALLE AUSGEWÄHLTEN IN DEN WARENKORB</button></div></section></div></main>
 <div class="mini-cart" id="mini"><h3>Im Warenkorb</h3><div id="miniText"></div><div class="mini-actions"><a class="btn primary" href="warenkorb.html">WARENKORB ANSEHEN / BEARBEITEN</a><button class="btn secondary" id="continue">WEITER SHOPPEN</button></div></div>
 <footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
@@ -466,7 +466,7 @@ function render(){let q=parseInt(qty.value,10);if(!Number.isFinite(q)||q<0)q=0;q
 qty.addEventListener('input',()=>{let raw=qty.value.replace(/[^0-9]/g,'');if(raw===''){normalSelected=false;render();updateBoxUI();warning.textContent='';return}let n=parseInt(raw,10);if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;normalSelected=n>0;render();updateBoxUI()});
 document.getElementById('minus').onclick=()=>{let q=parseInt(qty.value,10)||0;q=Math.max(0,q-1);normalSelected=q>0;qty.value=q;render();updateBoxUI()};
 document.getElementById('plus').onclick=()=>{normalSelected=true;let n=(parseInt(qty.value,10)||0)+1;if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;render()};
-document.getElementById('add').onclick=()=>{const q=parseInt(qty.value,10)||0,items=readItems(),other=cartQty(items.filter(i=>i.mode!=='normal'));if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}if(other+q>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Reduziere zuerst die Mystery Boxen.';return}const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=q;else items.unshift({mode:'normal',qty:q});saveItems(items);document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum · ${euro(total(q))}`;document.getElementById('mini').classList.add('open')};
+document.getElementById('add').onclick=()=>{const q=parseInt(qty.value,10)||0,items=readItems(),current=cartQty(items);if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}if(current+q>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Bereits im Warenkorb: '+current+'.';return}const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=Number(existing.qty||0)+q;else items.unshift({mode:'normal',qty:q});saveItems(items);document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum hinzugefügt · `${euro(total(q))}`;document.getElementById('mini').classList.add('open')};
 
 const boxInputs={two:document.getElementById('boxQtyTwo'),four:document.getElementById('boxQtyFour'),six:document.getElementById('boxQtySix'),nine:document.getElementById('boxQtyNine')};
 const boxOrder=['two','four','six','nine'];
@@ -474,8 +474,7 @@ const boxSelection={two:0,four:0,six:0,nine:0};
 function selectedBoxCount(){return boxOrder.reduce((s,k)=>s+boxSelection[k],0)}
 function updateBoxUI(){
   const count=selectedBoxCount(),normalQty=normalSelected?(parseInt(qty.value,10)||0):0,totalQty=count*10+normalQty,items=readItems();
-  const existingNormal=items.find(i=>i.mode==='normal')?.qty||0;
-  const cartBase=cartQty(items)-(normalSelected?existingNormal:0);
+  const cartBase=cartQty(items);
   const combinedQty=cartBase+totalQty;
   const list=document.getElementById('boxSelectionList');
   list.innerHTML='';
@@ -494,9 +493,8 @@ function updateBoxUI(){
 }
 function setBoxQty(k,n){
   const current=selectedBoxCount(),without=current-boxSelection[k],items=readItems();
-  const existingNormal=items.find(i=>i.mode==='normal')?.qty||0;
   const normalQty=normalSelected?(parseInt(qty.value,10)||0):0;
-  const cartBase=cartQty(items)-(normalSelected?existingNormal:0);
+  const cartBase=cartQty(items);
   const max=Math.max(0,Math.min(BOX_MAX,Math.floor((MAX-cartBase-normalQty)/10)-without));
   boxSelection[k]=Math.max(0,Math.min(Math.floor(max),Number(n)||0));
   updateBoxUI();
@@ -510,9 +508,9 @@ boxOrder.forEach(k=>{
 document.getElementById('addBox').onclick=()=>{
   const count=selectedBoxCount(),normalQty=normalSelected?(parseInt(qty.value,10)||0):0,selectedQty=count*10+normalQty,items=readItems();
   if(!selectedQty)return;
-  const existingWithoutSelection=cartQty(items)-(normalSelected?(items.find(i=>i.mode==='normal')?.qty||0):0);
-  if(existingWithoutSelection+selectedQty>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Reduziere zuerst deine Auswahl.';return}
-  if(normalSelected&&normalQty>0){const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=normalQty;else items.unshift({mode:'normal',qty:normalQty})}
+  const existingQty=cartQty(items);
+  if(existingQty+selectedQty>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Bereits im Warenkorb: '+existingQty+'. Mit deiner Auswahl wären es '+(existingQty+selectedQty)+'.';return}
+  if(normalSelected&&normalQty>0){const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=Number(existing.qty||0)+normalQty;else items.unshift({mode:'normal',qty:normalQty})}
   boxOrder.forEach(k=>{const n=boxSelection[k];if(!n)return;const existing=items.find(i=>i.mode==='box'&&i.boxType===k);if(existing)existing.boxQty=Math.min(BOX_MAX,Number(existing.boxQty||0)+n);else items.push({mode:'box',boxType:k,boxQty:n})});
   saveItems(items);
   let sum=normalQty>0?total(normalQty):0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);

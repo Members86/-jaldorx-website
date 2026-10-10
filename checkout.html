@@ -507,7 +507,7 @@ function render(){
           if(!form.checkValidity()){form.reportValidity();throw new Error('Bitte fülle alle Pflichtfelder aus und akzeptiere die AGB.');}
           const response=await fetch('api/paypal-create-order.php',{
             method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({customer:formData(),items})
+            body:JSON.stringify({customer:formData(),items,acceptedTerms:form.querySelector('.checkout-consent input[type="checkbox"]')?.checked===true})
           });
           const result=await response.json().catch(()=>null);
           if(!response.ok||!result||!result.ok||!result.orderID){

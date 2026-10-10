@@ -1,0 +1,50 @@
+name: Deploy website to IONOS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ionos-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install SFTP deployment client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Deploy files to IONOS without deleting remote files
+        env:
+          IONOS_HOST: ${{ secrets.IONOS_HOST }}
+          IONOS_PORT: ${{ secrets.IONOS_PORT }}
+          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
+          SSHPASS: ${{ secrets.IONOS_PASSWORD }}
+        run: |
+          set -eu
+          test -n "$IONOS_HOST"
+          test -n "$IONOS_PORT"
+          test -n "$IONOS_USERNAME"
+          test -n "$SSHPASS"
+
+          mkdir -p "$HOME/.ssh"
+          ssh-keyscan -p "$IONOS_PORT" "$IONOS_HOST" >> "$HOME/.ssh/known_hosts"
+
+          lftp -u "$IONOS_USERNAME","$SSHPASS" "sftp://$IONOS_HOST:$IONOS_PORT" <<'LFTP'
+          set cmd:fail-exit yes
+          set net:max-retries 2
+          set net:timeout 20
+          set sftp:auto-confirm no
+          set sftp:connect-program "ssh -a -x -p $IONOS_PORT -o HostKeyAlgorithms=+ssh-rsa"
+          cd /public
+          mirror --reverse --verbose --no-perms --exclude-glob .git --exclude-glob .github --exclude-glob .gitignore --exclude-glob api/config.php --exclude-glob db-config.php --exclude-glob db-test.php . .
+          bye
+          LFTP

@@ -465,8 +465,8 @@ function render(){
       detail+='<p><strong>'+nq+' × Mystery Duftbaum</strong></p><p class="muted">'+euro(nq===40?149.90/40:(tiers.find(t=>nq<=t.max)||tiers[0]).price)+' pro Stück · '+euro(lineSub)+'</p>';
     }
   });
-  const ship=shipping(q,sub),grand=sub+ship,free=ship===0,extra=Math.max(0,sub-normal);
-  document.getElementById('summary').innerHTML=detail+'<hr style="border-color:#ffffff12"><p>Warenwert: '+euro(sub)+'</p>'+(extra>0?'<p class="muted">Mystery-Set-Aufpreis: '+euro(extra)+'</p>':'')+'<p>Versand: '+(free?'Kostenlos ab 99 €':euro(ship))+'</p><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div>';
+  const ship=shipping(q,sub),grand=sub+ship,free=ship===0;
+  document.getElementById('summary').innerHTML=detail+'<hr style="border-color:#ffffff12"><p>Warenwert: '+euro(sub)+'</p><p>Versand: '+(free?'Kostenlos ab 99 €':euro(ship))+'</p><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div>';
   document.getElementById('checkout-form').onsubmit=async e=>{
     e.preventDefault();
     const form=e.currentTarget;

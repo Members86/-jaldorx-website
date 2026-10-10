@@ -16,13 +16,13 @@ try {
   $paypalId=is_array($data)?trim((string)($data['orderID']??'')):'';
   if(!preg_match('/^[A-Za-z0-9-]{5,100}$/',$paypalId)) jdxCaptureError('INVALID_PAYPAL_ORDER');
   $pdo->beginTransaction();
-  $st=$pdo->prepare("SELECT * FROM orders WHERE paypal_order_id=? LIMIT 1 FOR UPDATE");
+  $st=$pdo->prepare("SELECT *, (reservation_expires_at IS NOT NULL AND reservation_expires_at < NOW()) AS reservation_expired FROM orders WHERE paypal_order_id=? LIMIT 1 FOR UPDATE");
   $st->execute([$paypalId]); $order=$st->fetch(PDO::FETCH_ASSOC);
   if(!$order) { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_FOUND',404); }
   if(($order['payment_status']??'')==='paid') { $pdo->commit(); echo json_encode(['ok'=>true,'orderNumber'=>$order['order_number']??'','alreadyPaid'=>true]); exit; }
   $paymentState=(string)($order['payment_status']??'');
   if(!in_array($paymentState,['pending','capturing'],true)) { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_PAYABLE',409); }
-  if($paymentState==='pending' && !empty($order['reservation_expires_at']) && strtotime((string)$order['reservation_expires_at']) < time()) {
+  if($paymentState==='pending' && !empty($order['reservation_expires_at']) && (int)($order['reservation_expired']??0)===1) {
     $pdo->rollBack(); jdxCaptureError('RESERVATION_EXPIRED',409);
   }
   if($paymentState==='pending') {

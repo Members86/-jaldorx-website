@@ -4,12 +4,12 @@ declare(strict_types=1);
 /**
  * JALDORX PayPal REST helper.
  * Used by the sandbox checkout endpoints.
- * Requires api/paypal-config.php on IONOS (never commit that file).
+ * Requires paypal-config.php one directory above the public web root on IONOS (never commit that file).
  */
 
 function jdxPayPalConfig(): array
 {
-    $file = __DIR__ . '/paypal-config.php';
+    $file = dirname(__DIR__) . '/paypal-config.php';
     if (!is_file($file)) {
         throw new RuntimeException('PAYPAL_CONFIG_MISSING');
     }

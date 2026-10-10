@@ -1,16 +1,12 @@
--- JALDORX PayPal-Sandbox-Vorbereitung
--- Vor Ausführung Datenbank sichern. Nicht automatisch ausgeführt.
--- MariaDB: neue Felder für Zahlungsstatus, PayPal-Referenz und Ablauf der Reservierung.
-
+-- JALDORX PayPal-Sandbox-Migration
+-- Vor Ausführung Datenbank sichern. Einmalig in phpMyAdmin ausführen.
+-- Diese Migration nur auf der Test-/Sandbox-Datenbank ausführen, bevor die API-Dateien aktiviert werden.
 ALTER TABLE orders
-  ADD COLUMN IF NOT EXISTS payment_status VARCHAR(30) NOT NULL DEFAULT 'pending',
-  ADD COLUMN IF NOT EXISTS paypal_order_id VARCHAR(100) NULL,
-  ADD COLUMN IF NOT EXISTS reservation_expires_at DATETIME NULL;
+  ADD COLUMN payment_status VARCHAR(30) NOT NULL DEFAULT 'pending',
+  ADD COLUMN paypal_order_id VARCHAR(100) NULL,
+  ADD COLUMN reservation_expires_at DATETIME NULL,
+  ADD COLUMN paypal_capture_id VARCHAR(100) NULL;
 
-CREATE INDEX IF NOT EXISTS idx_orders_paypal_order_id ON orders (paypal_order_id);
-CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders (payment_status);
-
--- WICHTIG:
--- Diese Migration allein ändert keine Lagerbestände und bucht keine Bestellungen um.
--- Die Zahlungs-API muss Reservierungen transaktionssicher verwalten und PayPal-Status
--- serverseitig verifizieren, bevor sie payment_status auf 'paid' setzt.
+-- Keine zusätzlichen Indizes nötig, um den ersten Sandbox-Test durchzuführen.
+-- Die Lagerreservierung wird in inventory.reserved verwaltet.
+-- NICHT live schalten, bevor Checkout, Capture und Freigabe abgelaufener Reservierungen geprüft wurden.

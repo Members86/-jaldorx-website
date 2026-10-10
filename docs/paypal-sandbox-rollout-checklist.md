@@ -5,7 +5,9 @@
 - The PayPal REST helper is prepared, with method/path validation performed before requesting an OAuth token.
 - The database migration adds payment state and reservation metadata. It must be applied only once; the live database was reported to show a successful ALTER TABLE result.
 - The sandbox checkout and the new create/capture endpoints are implemented on this branch; it is not deployed to production.
-- The create endpoint now rejects malformed or unknown cart items instead of silently omitting them.
+- The create endpoint rejects malformed or unknown cart items, aggregates all single-item quantities for tier pricing, and limits request size.
+- Expired reservation cleanup is transactional and rechecks expiry after locking the order to reduce race conditions.
+- Capture reconciliation checks the PayPal status, amount, currency, local order reference, and order number. Concurrent retries that observe an already-paid order return success without deducting stock again.
 - Syntax lint passing does not establish that the payment flow works against IONOS/PayPal Sandbox.
 
 ## Required implementation order

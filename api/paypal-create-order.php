@@ -93,12 +93,12 @@ try {
     foreach($expired->fetchAll(PDO::FETCH_COLUMN) as $expiredId) {
       $pdo->beginTransaction();
       try {
-        $lockOrder=$pdo->prepare("SELECT id,payment_status,reservation_expires_at FROM orders WHERE id=? FOR UPDATE");
+        $lockOrder=$pdo->prepare("SELECT id,payment_status,reservation_expires_at,(reservation_expires_at < NOW()) AS is_expired FROM orders WHERE id=? FOR UPDATE");
         $lockOrder->execute([(int)$expiredId]); $expiredOrder=$lockOrder->fetch(PDO::FETCH_ASSOC);
         // Re-check expiry after locking to avoid racing a concurrent capture.
         if($expiredOrder && ($expiredOrder['payment_status']??'')==='pending' &&
            !empty($expiredOrder['reservation_expires_at']) &&
-           strtotime((string)$expiredOrder['reservation_expires_at']) < time()) {
+           (int)($expiredOrder['is_expired']??0)===1) {
           $q=$pdo->prepare("SELECT COALESCE(SUM(tree_quantity),0) FROM order_items WHERE order_id=?");
           $q->execute([(int)$expiredId]); $expiredQty=(int)$q->fetchColumn();
           if($expiredQty>0) {

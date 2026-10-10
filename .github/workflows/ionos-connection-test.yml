@@ -1,0 +1,32 @@
+name: IONOS connection test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connection-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH password helper
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: Test SSH login without changing files
+        env:
+          IONOS_HOST: ${{ secrets.IONOS_HOST }}
+          IONOS_PORT: ${{ secrets.IONOS_PORT }}
+          IONOS_USERNAME: ${{ secrets.IONOS_USERNAME }}
+          SSHPASS: ${{ secrets.IONOS_PASSWORD }}
+        run: |
+          set -eu
+          test -n "$IONOS_HOST"
+          test -n "$IONOS_PORT"
+          test -n "$IONOS_USERNAME"
+          test -n "$SSHPASS"
+          mkdir -p "$HOME/.ssh"
+          ssh-keyscan -p "$IONOS_PORT" "$IONOS_HOST" >> "$HOME/.ssh/known_hosts"
+          sshpass -e ssh             -p "$IONOS_PORT"             -o BatchMode=no             -o PreferredAuthentications=password,keyboard-interactive             -o PubkeyAuthentication=no             -o ConnectTimeout=15             "$IONOS_USERNAME@$IONOS_HOST"             'printf "IONOS_SSH_LOGIN_OK\n"; pwd'

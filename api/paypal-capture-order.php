@@ -67,6 +67,13 @@ try {
   $invCols=array_column($pdo->query("SHOW COLUMNS FROM inventory")->fetchAll(PDO::FETCH_ASSOC),'Field');
   $pdo->beginTransaction();
   $lock=$pdo->prepare("SELECT * FROM orders WHERE id=? LIMIT 1 FOR UPDATE"); $lock->execute([(int)$order['id']]); $locked=$lock->fetch(PDO::FETCH_ASSOC);
+  // A concurrent request may have finalized this same PayPal capture while this
+  // request was waiting. Return success without touching inventory a second time.
+  if($locked && ($locked['payment_status']??'')==='paid') {
+    $pdo->commit();
+    echo json_encode(['ok'=>true,'orderNumber'=>$locked['order_number']??'','total'=>number_format((float)($locked['total']??0),2,'.',''),'alreadyPaid'=>true]);
+    exit;
+  }
   if(!$locked || ($locked['payment_status']??'')!=='capturing') { $pdo->rollBack(); jdxCaptureError('ORDER_NOT_PAYABLE',409); }
   if(in_array('sku',$invCols,true)) { $s=$pdo->prepare("SELECT * FROM inventory WHERE sku=? LIMIT 1 FOR UPDATE"); $s->execute(['MYSTERY-DUFTBAUM']); }
   elseif($productId!==null && in_array('product_id',$invCols,true)) { $s=$pdo->prepare("SELECT * FROM inventory WHERE product_id=? LIMIT 1 FOR UPDATE"); $s->execute([$productId]); }

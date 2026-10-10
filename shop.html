@@ -473,19 +473,31 @@ const boxOrder=['two','four','six','nine'];
 const boxSelection={two:0,four:0,six:0,nine:0};
 function selectedBoxCount(){return boxOrder.reduce((s,k)=>s+boxSelection[k],0)}
 function updateBoxUI(){
-  const count=selectedBoxCount(),normalQty=normalSelected?(parseInt(qty.value,10)||0):0,totalQty=count*10+normalQty,list=document.getElementById('boxSelectionList');
+  const count=selectedBoxCount(),normalQty=normalSelected?(parseInt(qty.value,10)||0):0,totalQty=count*10+normalQty,items=readItems();
+  const existingNormal=items.find(i=>i.mode==='normal')?.qty||0;
+  const cartBase=cartQty(items)-(normalSelected?existingNormal:0);
+  const combinedQty=cartBase+totalQty;
+  const list=document.getElementById('boxSelectionList');
   list.innerHTML='';
   if(normalSelected&&normalQty>0){const chip=document.createElement('span');chip.className='jdx-box-chip';chip.textContent=normalQty+' × MYSTERY DUFTBAUM';list.appendChild(chip)}
   boxOrder.forEach(k=>{const n=boxSelection[k];if(!n)return;const chip=document.createElement('span');chip.className='jdx-box-chip';chip.textContent=n+' × '+boxes[k].name;list.appendChild(chip)});
   if(!list.children.length)list.innerHTML='<span class="muted">Noch keine Auswahl getroffen.</span>';
-  const selectionParts=[];if(normalSelected&&normalQty>0)selectionParts.push(normalQty+' normale');if(count>0)selectionParts.push(count+' Sets');document.getElementById('boxSelectionCount').textContent=selectionParts.join(' + ')+' · '+totalQty+' Duftbäume';
+  const selectionParts=[];if(normalSelected&&normalQty>0)selectionParts.push(normalQty+' normale');if(count>0)selectionParts.push(count+' Sets');
+  document.getElementById('boxSelectionCount').textContent=(selectionParts.length?selectionParts.join(' + ')+' · ':'')+totalQty+' ausgewählt · '+combinedQty+'/40 insgesamt';
   let sum=normalSelected&&normalQty>0?total(normalQty):0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
   document.getElementById('boxSelectionTotal').textContent=euro(sum);
-  document.getElementById('addBox').disabled=count===0&&!(normalSelected&&normalQty>0);
-  boxOrder.forEach(k=>{boxInputs[k].value=boxSelection[k];boxInputs[k].setAttribute('aria-valuemax',String(boxSelection[k]+(BOX_MAX-count)));document.querySelector('.jdx-box-option[data-box="'+k+'"]').classList.toggle('active',boxSelection[k]>0)});
+  const overLimit=combinedQty>MAX;
+  warning.textContent=overLimit?'Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+combinedQty+'. Maximal 40 pro Bestellung.':(cartQty(items)>0?'Bereits im Warenkorb: '+cartQty(items)+' Duftbäume.':'');
+  document.getElementById('addBox').disabled=(count===0&&!(normalSelected&&normalQty>0))||overLimit;
+  const availableSets=Math.max(0,Math.floor((MAX-cartBase-normalQty)/10));
+  boxOrder.forEach(k=>{boxInputs[k].value=boxSelection[k];boxInputs[k].setAttribute('aria-valuemax',String(Math.max(boxSelection[k],Math.min(BOX_MAX,boxSelection[k]+Math.max(0,availableSets-count)))));document.querySelector('.jdx-box-option[data-box="'+k+'"]').classList.toggle('active',boxSelection[k]>0)});
 }
 function setBoxQty(k,n){
-  const current=selectedBoxCount(),without=current-boxSelection[k],max=Math.min(BOX_MAX,MAX/10-without);
+  const current=selectedBoxCount(),without=current-boxSelection[k],items=readItems();
+  const existingNormal=items.find(i=>i.mode==='normal')?.qty||0;
+  const normalQty=normalSelected?(parseInt(qty.value,10)||0):0;
+  const cartBase=cartQty(items)-(normalSelected?existingNormal:0);
+  const max=Math.max(0,Math.min(BOX_MAX,Math.floor((MAX-cartBase-normalQty)/10)-without));
   boxSelection[k]=Math.max(0,Math.min(Math.floor(max),Number(n)||0));
   updateBoxUI();
 }

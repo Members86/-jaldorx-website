@@ -9,12 +9,12 @@
 - PHP-cURL muss auf IONOS aktiviert sein.
 
 ## 2. PayPal-Konfiguration auf IONOS
-1. Im IONOS-Webspace-Dateimanager `/public/api` öffnen.
-2. `paypal-config.example.php` als Vorlage verwenden und eine neue Datei `paypal-config.php` erstellen.
-3. Nur in der IONOS-Datei die Sandbox Client ID und das Sandbox Secret eintragen. Niemals echte Zugangsdaten in GitHub, Screenshots oder Chat veröffentlichen.
+1. Im IONOS-Webspace-Dateimanager das Verzeichnis **eine Ebene oberhalb von `/public`** öffnen. Die private Konfigurationsdatei darf **nicht** in `/public` oder `/public/api` liegen.
+2. Eine Datei namens `paypal-config.php` außerhalb des öffentlichen Webverzeichnisses erstellen. Die Vorlage `api/paypal-config.example.php` aus diesem GitHub-Zweig nur als Strukturhilfe verwenden; nicht einfach in `/public/api` hochladen.
+3. Nur in der privaten IONOS-Datei die Sandbox Client ID und das Sandbox Secret eintragen. Niemals echte Zugangsdaten in GitHub, Screenshots oder Chat veröffentlichen.
 4. Die Datei muss mit `<?php` beginnen und ein PHP-Array zurückgeben. `mode` muss `sandbox` sein.
-5. `api/.htaccess` sperrt direkten HTTP-Zugriff auf die private Konfiguration und den PHP-Helper. Nach dem Upload testen, dass `https://jaldorx.de/api/paypal-config.php` eine 403-Antwort liefert.
-6. `https://jaldorx.de/api/paypal-public-config.php` soll ohne Secrets nur `ok`, `mode` und die Client ID zurückgeben. Solange die Dateien noch nicht auf IONOS liegen, ist eine 503-Antwort erwartet.
+5. Da die Datei außerhalb des öffentlichen Webverzeichnisses liegt, soll `https://jaldorx.de/api/paypal-config.php` nicht abrufbar sein (typischerweise 404; je nach Serverkonfiguration kann es auch 403 sein). Niemals die private Konfigurationsdatei zum Test in den öffentlichen Ordner verschieben.
+6. `https://jaldorx.de/api/paypal-public-config.php` soll ohne Secrets nur `ok`, `mode` und die Client ID zurückgeben. Solange die Testdateien noch nicht auf IONOS liegen oder die private Konfiguration fehlt, ist eine 503-Antwort erwartet.
 
 ## 3. Testzweig-Dateien
 Dieser Zweig enthält:

@@ -211,6 +211,15 @@ try {
 
     $orderId = $insertExisting($pdo, 'orders', $orderData, $ordersColumns);
 
+    // Ensure monetary totals are written explicitly, even if the table has defaults/triggers.
+    $totalsUpdate = $pdo->prepare("UPDATE orders SET subtotal = ?, shipping = ?, total = ? WHERE id = ?");
+    $totalsUpdate->execute([
+        number_format($merchandiseTotal, 2, '.', ''),
+        number_format($shipping, 2, '.', ''),
+        number_format($grandTotal, 2, '.', ''),
+        $orderId
+    ]);
+
     foreach ($normalized as $line) {
         $itemData = [
             'order_id' => $orderId,

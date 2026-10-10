@@ -8,6 +8,7 @@ require_once __DIR__.'/paypal-client.php';
 if(!is_file(__DIR__.'/config.php')) jdxCaptureError('SERVER_CONFIG_MISSING',500);
 require __DIR__.'/config.php';
 if(!isset($pdo)||!($pdo instanceof PDO)) jdxCaptureError('DATABASE_NOT_CONFIGURED',500);
+$paypalPaymentVerified = false;
 try {
   if(jdxPayPalConfig()['mode']!=='sandbox') jdxCaptureError('SANDBOX_ONLY',503);
   $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
@@ -58,6 +59,10 @@ try {
     // Keep the order in 'capturing' until a later request can safely reconcile it.
     jdxCaptureError('PAYMENT_NOT_CONFIRMED',402);
   }
+  // From this point PayPal has confirmed the exact expected completed capture.
+  // If local finalization fails, tell the buyer not to pay again and leave the
+  // order in 'capturing' so a retry can reconcile it without another capture.
+  $paypalPaymentVerified = true;
   $itemStmt=$pdo->prepare("SELECT COALESCE(SUM(tree_quantity),0) AS trees FROM order_items WHERE order_id=?");
   $itemStmt->execute([(int)$order['id']]); $qty=(int)$itemStmt->fetchColumn();
   if($qty<1 || $qty>40) throw new RuntimeException('ORDER_QUANTITY_INVALID');
@@ -93,5 +98,10 @@ try {
 } catch(Throwable $e) {
   if(isset($pdo)&&$pdo instanceof PDO&&$pdo->inTransaction()) $pdo->rollBack();
   error_log('JALDORX PayPal capture failed: '.$e->getMessage());
-  http_response_code(500); echo json_encode(['ok'=>false,'error'=>'PAYMENT_CAPTURE_FAILED']);
+  http_response_code(500);
+  if ($paypalPaymentVerified) {
+    echo json_encode(['ok'=>false,'error'=>'PAYMENT_RECEIVED_RECONCILIATION_REQUIRED','message'=>'PayPal bestätigt die Zahlung. Die lokale Bestellung wird sicher abgeglichen; bitte nicht erneut bezahlen.']);
+  } else {
+    echo json_encode(['ok'=>false,'error'=>'PAYMENT_CAPTURE_FAILED']);
+  }
 }

@@ -135,13 +135,16 @@ try {
     if((int)$inv['stock']-(int)$inv['reserved'] < $treeQty) { $pdo->rollBack(); jdxJsonError('INSUFFICIENT_STOCK',409); }
     $orderNumber='JX-'.random_int(100000,999999);
     $clean=static fn($v,$max=255)=>mb_substr(trim((string)$v),0,$max);
+    // Use the database clock for reservation deadlines, matching expiry checks.
+    $reservationDeadline=(string)$pdo->query("SELECT DATE_ADD(NOW(), INTERVAL 30 MINUTE)")->fetchColumn();
+    if($reservationDeadline==='') throw new RuntimeException('RESERVATION_DEADLINE_FAILED');
     $values=[
       'order_number'=>$orderNumber,'customer_name'=>$clean($customer['firstName'],100).' '.$clean($customer['lastName'],100),
       'street'=>$clean($customer['street']),'postal_code'=>$clean($customer['postalCode'],20),'city'=>$clean($customer['city'],120),
       'country'=>'Deutschland','customer_email'=>$clean($customer['email']),'payment_method'=>'PayPal Sandbox',
       'quantity'=>$treeQty,'subtotal'=>number_format($subtotal,2,'.',''),'shipping'=>number_format($shipping,2,'.',''),
       'total'=>number_format($total,2,'.',''),'status'=>'pending','payment_status'=>'pending',
-      'reservation_expires_at'=>date('Y-m-d H:i:s',time()+30*60)
+      'reservation_expires_at'=>$reservationDeadline
     ];
     $insert=[]; foreach($values as $k=>$v) if(in_array($k,$cols['orders'],true)) $insert[$k]=$v;
     if(!$insert) throw new RuntimeException('ORDER_SCHEMA_INVALID');

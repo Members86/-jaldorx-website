@@ -147,7 +147,7 @@ if ($orderId !== null && $orderItems) {
 <td><?php echo jdx_h(jdx_pick($order, ['email','customer_email'])); ?></td>
 <td><?php echo jdx_h(jdx_pick($order, ['quantity','total_quantity','items_count'])); ?></td>
 <td><strong><?php echo jdx_h(jdx_pick($order, ['grand_total','total','total_amount'])); ?> €</strong></td>
-<td><?php echo jdx_h(jdx_pick($order, ['status','order_status'], 'offen')); ?><div class="muted"><?php echo jdx_h(jdx_pick($order, ['payment_method'], '')); ?></div></td>
+<td><?php echo jdx_h(jdx_pick($order, ['status','order_status'], 'offen')); ?><?php if (array_key_exists('payment_status', $order) && $order['payment_status'] !== null && $order['payment_status'] !== ''): ?><div class="muted">Zahlungsstatus: <?php echo jdx_h($order['payment_status']); ?></div><?php endif; ?><div class="muted"><?php echo jdx_h(jdx_pick($order, ['payment_method'], '')); ?></div></td>
 </tr>
 <?php endforeach; ?>
 </tbody></table></div>

@@ -168,6 +168,7 @@ try {
     if($paypalId==='') throw new RuntimeException('PAYPAL_ORDER_CREATE_FAILED');
     $u=$pdo->prepare("UPDATE orders SET paypal_order_id=? WHERE id=? AND payment_status='pending'");
     $u->execute([$paypalId,$orderId]);
+    if($u->rowCount()!==1) throw new RuntimeException('LOCAL_ORDER_LINK_FAILED');
     echo json_encode(['ok'=>true,'orderID'=>$paypalId,'orderNumber'=>$orderNumber,'total'=>$total]);
 } catch(Throwable $e) {
     if(isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) $pdo->rollBack();

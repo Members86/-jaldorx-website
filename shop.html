@@ -425,7 +425,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="shop-layout"><div class="shop-visual"><img class="shop-product-image" src="mystery-hero.jpeg" alt="JALDORX MYSTERY DUFTBAUM"></div>
 <div class="product-card"><div class="muted">MYSTERY DUFTBAUM</div><div class="price" id="unitPrice">4,49 € / Stück</div><p class="muted">inkl. MwSt. · Versand wird an der Kasse berechnet</p><p class="muted">Maximal 40 Stück pro Online-Bestellung.</p>
 <div class="qty"><button type="button" id="minus">−</button><input id="qty" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl einzelne Duftbäume"><button type="button" id="plus">+</button></div><div id="normalTotal" class="jdx-normal-total">0,00 €</div><div id="normalShippingHint" class="jdx-normal-shipping-hint">Versand wird an der Kasse berechnet.</div><div id="warning" class="warning"></div>
-<div class="discount-box" id="discountBox"></div><button class="btn primary" id="add">IN DEN WARENKORB</button><section class="jdx-box-section"><div class="kicker">MYSTERY 10ER-SETS</div><h2>WIE VIEL MYSTERY WILLST DU?</h2><p class="muted jdx-box-intro">Wähle direkt bei jedem 10er-Set, wie oft du es möchtest. Du kannst normale Duftbäume und verschiedene 10er-Sets miteinander kombinieren – insgesamt maximal 40 Duftbäume pro Bestellung.</p><p class="muted jdx-box-intro" style="margin-top:10px"><strong style="color:#fff">Hinweis:</strong> Jedes 10er-Set enthält 10 einzelne MYSTERY DUFTBÄUME. Es wird keine zusätzliche Box oder Geschenkbox geliefert.</p><div class="jdx-box-grid">
+<div class="discount-box" id="discountBox"></div><button class="btn primary" id="add">IN DEN WARENKORB</button><section class="jdx-box-section"><div class="kicker">MYSTERY 10ER-SETS</div><h2>WIE VIEL MYSTERY WILLST DU?</h2><div id="boxWarning" class="warning" style="display:none;margin:12px 0 18px"></div><p class="muted jdx-box-intro">Wähle direkt bei jedem 10er-Set, wie oft du es möchtest. Du kannst normale Duftbäume und verschiedene 10er-Sets miteinander kombinieren – insgesamt maximal 40 Duftbäume pro Bestellung.</p><p class="muted jdx-box-intro" style="margin-top:10px"><strong style="color:#fff">Hinweis:</strong> Jedes 10er-Set enthält 10 einzelne MYSTERY DUFTBÄUME. Es wird keine zusätzliche Box oder Geschenkbox geliefert.</p><div class="jdx-box-grid">
 <div class="jdx-box-option" data-box="two"><strong>🍀🍀 2 GUTE GARANTIERT</strong><span>Mindestens 2 gute Düfte sind garantiert.</span><b>43,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="two">−</button><input id="boxQtyTwo" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 2 gute garantiert"><button type="button" data-box-plus="two">+</button><small>Sets</small></div></div>
 <div class="jdx-box-option" data-box="four"><strong>🍀🍀🍀🍀 4 GUTE GARANTIERT</strong><span>Mindestens 4 gute Düfte sind garantiert.</span><b>45,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="four">−</button><input id="boxQtyFour" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 4 gute garantiert"><button type="button" data-box-plus="four">+</button><small>Sets</small></div></div>
 <div class="jdx-box-option" data-box="six"><strong>🟢 6 GUTE GARANTIERT</strong><span>Mindestens 6 gute Düfte sind garantiert.</span><b>47,90 €</b><div class="jdx-box-qty"><button type="button" data-box-minus="six">−</button><input id="boxQtySix" value="0" inputmode="numeric" autocomplete="off" aria-label="Anzahl 6 gute garantiert"><button type="button" data-box-plus="six">+</button><small>Sets</small></div></div>
@@ -486,13 +486,16 @@ function updateBoxUI(){
   let sum=normalSelected&&normalQty>0?total(normalQty):0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
   document.getElementById('boxSelectionTotal').textContent=euro(sum);
   const overLimit=combinedQty>MAX;
+  const warningText=overLimit?'Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+combinedQty+'. Maximal 40 Duftbäume pro Bestellung.':(cartBase>0?'Bereits im Warenkorb: '+cartBase+' Duftbäume.':'');
   const normalAddButton=document.getElementById('add');
   const setsSelected=count>0;
   normalAddButton.disabled=setsSelected;
   normalAddButton.title=setsSelected?'Bitte unten alle ausgewählten Artikel gemeinsam in den Warenkorb legen.':'';
   normalAddButton.style.opacity=setsSelected?'.45':'';
   normalAddButton.style.cursor=setsSelected?'not-allowed':'';
-  warning.textContent=overLimit?'Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+combinedQty+'. Maximal 40 pro Bestellung.':(cartQty(items)>0?'Bereits im Warenkorb: '+cartQty(items)+' Duftbäume.':'');
+  warning.textContent=warningText;
+  const boxWarning=document.getElementById('boxWarning');
+  if(boxWarning){boxWarning.textContent=warningText;boxWarning.style.display=warningText?'block':'none';}
   document.getElementById('addBox').disabled=(count===0&&!(normalSelected&&normalQty>0))||overLimit;
   const availableSets=Math.max(0,Math.floor((MAX-cartBase-normalQty)/10));
   boxOrder.forEach(k=>{boxInputs[k].value=boxSelection[k];boxInputs[k].setAttribute('aria-valuemax',String(Math.max(boxSelection[k],Math.min(BOX_MAX,boxSelection[k]+Math.max(0,availableSets-count)))));document.querySelector('.jdx-box-option[data-box="'+k+'"]').classList.toggle('active',boxSelection[k]>0)});

@@ -525,7 +525,7 @@ function render(){
             body:JSON.stringify({orderID:data.orderID})
           });
           const result=await response.json().catch(()=>null);
-          if(!response.ok||!result||!result.ok) throw new Error('Die Zahlung konnte nicht bestätigt werden. Bitte nicht erneut bezahlen und kontaktiere den Shop, falls PayPal die Zahlung als abgeschlossen anzeigt.');
+          if(!response.ok||!result||!result.ok){if(result?.error==='PAYMENT_RECEIVED_RECONCILIATION_REQUIRED'){setStatus('Zahlung von PayPal bestätigt – Bestellung wird abgeglichen.');throw new Error('PayPal hat die Zahlung bestätigt, aber die Bestellung konnte noch nicht abschließend verbucht werden. Bitte auf keinen Fall erneut bezahlen. Notiere dir die PayPal-Transaktionsdetails und kontaktiere JALDORX, falls die Bestellbestätigung nicht erscheint.');}throw new Error('Die Zahlung konnte nicht bestätigt werden. Bitte nicht erneut bezahlen und kontaktiere den Shop, falls PayPal die Zahlung als abgeschlossen anzeigt.');}
           clearCart();
           document.getElementById('checkout-content').style.display='none';
           document.getElementById('success').classList.add('open');

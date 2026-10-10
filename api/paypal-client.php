@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * JALDORX PayPal REST helper.
- * This file is intentionally not connected to checkout yet.
+ * Used by the sandbox checkout endpoints.
  * Requires api/paypal-config.php on IONOS (never commit that file).
  */
 

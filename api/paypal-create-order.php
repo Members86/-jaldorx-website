@@ -87,25 +87,34 @@ try {
         $cols[$table]=array_column($pdo->query("SHOW COLUMNS FROM ".$table)->fetchAll(PDO::FETCH_ASSOC),'Field');
     }
     // Release reservations from abandoned sandbox checkouts before checking available stock.
-    $expired=$pdo->prepare("SELECT id FROM orders WHERE payment_status='pending' AND reservation_expires_at IS NOT NULL AND reservation_expires_at < NOW()");
+    $expired=$pdo->prepare("SELECT id FROM orders WHERE payment_status='pending' AND reservation_expires_at IS NOT NULL AND reservation_expires_at < NOW() ORDER BY id ASC LIMIT 100");
     $expired->execute();
     foreach($expired->fetchAll(PDO::FETCH_COLUMN) as $expiredId) {
-      $q=$pdo->prepare("SELECT COALESCE(SUM(tree_quantity),0) FROM order_items WHERE order_id=?");
-      $q->execute([(int)$expiredId]); $expiredQty=(int)$q->fetchColumn();
       $pdo->beginTransaction();
-      $lockOrder=$pdo->prepare("SELECT id,payment_status FROM orders WHERE id=? FOR UPDATE");
-      $lockOrder->execute([(int)$expiredId]); $expiredOrder=$lockOrder->fetch(PDO::FETCH_ASSOC);
-      if($expiredOrder && ($expiredOrder['payment_status']??'')==='pending') {
-        if($expiredQty>0) {
-          if(in_array('sku',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'");
-          elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?");
-          else throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED');
-          if(in_array('sku',$cols['inventory'],true)) $release->execute([$expiredQty]);
-          elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release->execute([$expiredQty,$productId]);
+      try {
+        $lockOrder=$pdo->prepare("SELECT id,payment_status,reservation_expires_at FROM orders WHERE id=? FOR UPDATE");
+        $lockOrder->execute([(int)$expiredId]); $expiredOrder=$lockOrder->fetch(PDO::FETCH_ASSOC);
+        // Re-check expiry after locking to avoid racing a concurrent capture.
+        if($expiredOrder && ($expiredOrder['payment_status']??'')==='pending' &&
+           !empty($expiredOrder['reservation_expires_at']) &&
+           strtotime((string)$expiredOrder['reservation_expires_at']) < time()) {
+          $q=$pdo->prepare("SELECT COALESCE(SUM(tree_quantity),0) FROM order_items WHERE order_id=?");
+          $q->execute([(int)$expiredId]); $expiredQty=(int)$q->fetchColumn();
+          if($expiredQty>0) {
+            if(in_array('sku',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'");
+            elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?");
+            else throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED');
+            if(in_array('sku',$cols['inventory'],true)) $release->execute([$expiredQty]);
+            elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release->execute([$expiredQty,$productId]);
+            if($release->rowCount()!==1) throw new RuntimeException('RESERVATION_RELEASE_FAILED');
+          }
+          $pdo->prepare("UPDATE orders SET payment_status='expired', status='expired' WHERE id=? AND payment_status='pending'")->execute([(int)$expiredId]);
         }
-        $pdo->prepare("UPDATE orders SET payment_status='expired', status='expired' WHERE id=? AND payment_status='pending'")->execute([(int)$expiredId]);
+        $pdo->commit();
+      } catch(Throwable $cleanupError) {
+        if($pdo->inTransaction()) $pdo->rollBack();
+        throw $cleanupError;
       }
-      $pdo->commit();
     }
 
     $pdo->beginTransaction();

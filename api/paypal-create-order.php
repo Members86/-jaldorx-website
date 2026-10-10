@@ -102,11 +102,19 @@ try {
           $q=$pdo->prepare("SELECT COALESCE(SUM(tree_quantity),0) FROM order_items WHERE order_id=?");
           $q->execute([(int)$expiredId]); $expiredQty=(int)$q->fetchColumn();
           if($expiredQty>0) {
-            if(in_array('sku',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'");
-            elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?");
-            else throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED');
-            if(in_array('sku',$cols['inventory'],true)) $release->execute([$expiredQty]);
-            elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release->execute([$expiredQty,$productId]);
+            if(in_array('sku',$cols['inventory'],true)) {
+              $release=$pdo->prepare("UPDATE inventory SET reserved=reserved-? WHERE sku='MYSTERY-DUFTBAUM' AND reserved>=?");
+              $release->execute([$expiredQty,$expiredQty]);
+            } elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) {
+              $release=$pdo->prepare("UPDATE inventory SET reserved=reserved-? WHERE product_id=? AND reserved>=?");
+              $release->execute([$expiredQty,$productId,$expiredQty]);
+            } else {
+              $invIdStmt=$pdo->query("SELECT id FROM inventory ORDER BY id ASC LIMIT 1 FOR UPDATE");
+              $invId=(int)$invIdStmt->fetchColumn();
+              if($invId<1) throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED');
+              $release=$pdo->prepare("UPDATE inventory SET reserved=reserved-? WHERE id=? AND reserved>=?");
+              $release->execute([$expiredQty,$invId,$expiredQty]);
+            }
             if($release->rowCount()!==1) throw new RuntimeException('RESERVATION_RELEASE_FAILED');
           }
           $pdo->prepare("UPDATE orders SET payment_status='expired', status='expired' WHERE id=? AND payment_status='pending'")->execute([(int)$expiredId]);

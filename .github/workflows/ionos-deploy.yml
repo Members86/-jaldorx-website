@@ -43,7 +43,7 @@ jobs:
           set net:max-retries 2
           set net:timeout 20
           set sftp:auto-confirm no
-          set sftp:connect-program "ssh -a -x -p $IONOS_PORT -o HostKeyAlgorithms=+ssh-rsa"
+          set sftp:connect-program "ssh -a -x -p 22 -o HostKeyAlgorithms=+ssh-rsa"
           cd /public
           mirror --reverse --verbose --no-perms --exclude-glob .git --exclude-glob .github --exclude-glob .gitignore --exclude-glob api/config.php --exclude-glob db-config.php --exclude-glob db-test.php . .
           bye

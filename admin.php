@@ -135,7 +135,7 @@ if ($orderId !== null && $orderItems) {
     echo '<div class="items">';
     foreach ($orderItems as $oi) {
         if ((string)($oi['order_id'] ?? '') === (string)$orderId && $shown < 8) {
-            echo jdx_h(jdx_pick($oi, ['item_name','name','item_code'], 'Artikel')) . ' × ' . jdx_h(jdx_pick($oi, ['quantity'], '1')) . '<br>';
+            echo jdx_h(jdx_pick($oi, ['product_name','item_name','name','sku','item_code'], 'Artikel')) . ' × ' . jdx_h(jdx_pick($oi, ['quantity'], '1')) . '<br>';
             $shown++;
         }
     }
@@ -143,7 +143,7 @@ if ($orderId !== null && $orderItems) {
 }
 ?>
 </td>
-<td><?php echo jdx_h(trim(jdx_pick($order, ['customer_first_name','first_name','firstname'], '') . ' ' . jdx_pick($order, ['customer_last_name','last_name','lastname'], '')) ?: jdx_pick($order, ['customer_name','name'])); ?><div class="muted"><?php echo jdx_h(jdx_pick($order, ['street','address'], '')); ?><br><?php echo jdx_h(trim(jdx_pick($order, ['postal_code','postcode','zip'], '') . ' ' . jdx_pick($order, ['city','town'], ''))); ?></div></td>
+<td><?php echo jdx_h(jdx_pick($order, ['customer_name','name'], trim((($order['customer_first_name'] ?? '') . ' ' . ($order['customer_last_name'] ?? ''))))); ?><div class="muted"><?php echo jdx_h(jdx_pick($order, ['street','address'], '')); ?><br><?php echo jdx_h(trim(jdx_pick($order, ['postal_code','postcode','zip'], '') . ' ' . jdx_pick($order, ['city','town'], ''))); ?></div></td>
 <td><?php echo jdx_h(jdx_pick($order, ['email','customer_email'])); ?></td>
 <td><?php echo jdx_h(jdx_pick($order, ['quantity','total_quantity','items_count'])); ?></td>
 <td><strong><?php echo jdx_h(jdx_pick($order, ['grand_total','total','total_amount'])); ?> €</strong></td>

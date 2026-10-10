@@ -56,6 +56,31 @@ try {
     foreach(['products','inventory','orders','order_items'] as $table) {
         $cols[$table]=array_column($pdo->query("SHOW COLUMNS FROM ".$table)->fetchAll(PDO::FETCH_ASSOC),'Field');
     }
+    // Release reservations from abandoned sandbox checkouts before checking available stock.
+    $expired=$pdo->prepare("SELECT id FROM orders WHERE payment_status='pending' AND reservation_expires_at IS NOT NULL AND reservation_expires_at < NOW()");
+    $expired->execute();
+    foreach($expired->fetchAll(PDO::FETCH_COLUMN) as $expiredId) {
+      $q=$pdo->prepare("SELECT COALESCE(SUM(tree_quantity),0) FROM order_items WHERE order_id=?");
+      $q->execute([(int)$expiredId]); $expiredQty=(int)$q->fetchColumn();
+      $pdo->beginTransaction();
+      $lockOrder=$pdo->prepare("SELECT id,payment_status FROM orders WHERE id=? FOR UPDATE");
+      $lockOrder->execute([(int)$expiredId]); $expiredOrder=$lockOrder->fetch(PDO::FETCH_ASSOC);
+      if($expiredOrder && ($expiredOrder['payment_status']??'')==='pending') {
+        if($expiredQty>0) {
+          if(in_array('sku',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'");
+          elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?");
+          else $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE id=(SELECT inventory_id FROM orders WHERE id=?)");
+          if(isset($release)) {
+            if($productId!==null && in_array('product_id',$cols['inventory'],true) && !in_array('sku',$cols['inventory'],true)) $release->execute([$expiredQty,$productId]);
+            elseif(!in_array('sku',$cols['inventory'],true) && !($productId!==null && in_array('product_id',$cols['inventory'],true))) $release->execute([$expiredQty,(int)$expiredId]);
+            else $release->execute([$expiredQty]);
+          }
+        }
+        $pdo->prepare("UPDATE orders SET payment_status='expired', status='expired' WHERE id=? AND payment_status='pending'")->execute([(int)$expiredId]);
+      }
+      $pdo->commit();
+    }
+
     $pdo->beginTransaction();
     if(in_array('sku',$cols['inventory'],true)) { $s=$pdo->prepare("SELECT * FROM inventory WHERE sku=? LIMIT 1 FOR UPDATE"); $s->execute(['MYSTERY-DUFTBAUM']); }
     elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) { $s=$pdo->prepare("SELECT * FROM inventory WHERE product_id=? LIMIT 1 FOR UPDATE"); $s->execute([$productId]); }
@@ -105,6 +130,20 @@ try {
     echo json_encode(['ok'=>true,'orderID'=>$paypalId,'orderNumber'=>$orderNumber,'total'=>$total]);
 } catch(Throwable $e) {
     if(isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) $pdo->rollBack();
+    // If PayPal order creation fails after a reservation was committed, release that reservation.
+    if(isset($pdo,$orderId,$treeQty,$cols) && $pdo instanceof PDO && $orderId>0) {
+      try {
+        $pdo->beginTransaction();
+        $q=$pdo->prepare("SELECT payment_status FROM orders WHERE id=? FOR UPDATE"); $q->execute([$orderId]); $st=$q->fetch(PDO::FETCH_ASSOC);
+        if($st && ($st['payment_status']??'')==='pending') {
+          if(in_array('sku',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'"); $release->execute([$treeQty]); }
+          elseif(isset($productId) && $productId!==null && in_array('product_id',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?"); $release->execute([$treeQty,$productId]); }
+          else { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE id=(SELECT inventory_id FROM orders WHERE id=?)"); $release->execute([$treeQty,$orderId]); }
+          $pdo->prepare("UPDATE orders SET payment_status='failed', status='failed' WHERE id=?")->execute([$orderId]);
+        }
+        $pdo->commit();
+      } catch(Throwable $cleanupError) { if($pdo->inTransaction()) $pdo->rollBack(); error_log('JALDORX reservation cleanup failed: '.$cleanupError->getMessage()); }
+    }
     error_log('JALDORX PayPal create-order failed: '.$e->getMessage());
     http_response_code(500); echo json_encode(['ok'=>false,'error'=>'PAYPAL_ORDER_CREATE_FAILED']);
 }

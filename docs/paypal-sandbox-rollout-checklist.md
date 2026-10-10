@@ -6,9 +6,10 @@
 - The database migration adds payment state and reservation metadata. It must be applied only once; the live database was reported to show a successful ALTER TABLE result.
 - The sandbox checkout and the new create/capture endpoints are implemented on this branch; it is not deployed to production.
 - The create endpoint rejects malformed or unknown cart items, aggregates all single-item quantities for tier pricing, and limits request size.
-- Expired reservation cleanup is transactional and rechecks expiry after locking the order to reduce race conditions. Expiry comparisons use the database clock (`NOW()`) consistently instead of mixing PHP and database time zones.
+- Expired reservation cleanup is transactional and rechecks expiry after locking the order to reduce race conditions. Expiry comparisons use the database clock (`NOW()`) consistently instead of mixing PHP and database time zones. Cleanup now subtracts only when the recorded reservation quantity is available, including schemas that use the inventory row ID fallback; it fails visibly rather than forcing reservations to zero.
 - Capture reconciliation checks the PayPal status, amount, currency, local order reference, and order number. Concurrent retries that observe an already-paid order return success without deducting stock again. If PayPal's exact completed capture is verified but local finalization fails, the API returns `PAYMENT_RECEIVED_RECONCILIATION_REQUIRED`; checkout explicitly tells the buyer not to pay again and preserves the cart while the order remains recoverable in `capturing`.
-- Syntax lint passing does not establish that the payment flow works against IONOS/PayPal Sandbox.
+- The GitHub Actions lint workflow now extracts inline script blocks with a whitespace-safe script-tag pattern. Syntax lint passing does not establish that the payment flow works against IONOS/PayPal Sandbox.
+- A separate test matrix documents 18 scenarios and the evidence needed before release: `docs/paypal-sandbox-test-matrix.md`.
 
 ## Required implementation order
 1. Add a server-side order-creation endpoint that recalculates every price from trusted server data, creates a pending order, and reserves stock under a database transaction.

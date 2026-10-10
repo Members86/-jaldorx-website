@@ -2,7 +2,7 @@
 declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
-function jdxCaptureError(string $code,int $status=400): never { http_response_code($status); echo json_encode(['ok'=>false,'error'=>$code]); exit; }
+function jdxCaptureError(string $code,int $status=400): void { http_response_code($status); echo json_encode(['ok'=>false,'error'=>$code]); exit; }
 if($_SERVER['REQUEST_METHOD']!=='POST') jdxCaptureError('METHOD_NOT_ALLOWED',405);
 require_once __DIR__.'/paypal-client.php';
 if(!is_file(__DIR__.'/config.php')) jdxCaptureError('SERVER_CONFIG_MISSING',500);

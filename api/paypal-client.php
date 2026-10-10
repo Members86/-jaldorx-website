@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 function jdxPayPalConfig(): array
 {
-    $file = dirname(__DIR__) . '/paypal-config.php';
+    $file = dirname(__DIR__, 2) . '/paypal-config.php';
     if (!is_file($file)) {
         throw new RuntimeException('PAYPAL_CONFIG_MISSING');
     }

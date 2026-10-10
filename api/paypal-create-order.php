@@ -69,12 +69,9 @@ try {
         if($expiredQty>0) {
           if(in_array('sku',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'");
           elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?");
-          else $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE id=(SELECT inventory_id FROM orders WHERE id=?)");
-          if(isset($release)) {
-            if($productId!==null && in_array('product_id',$cols['inventory'],true) && !in_array('sku',$cols['inventory'],true)) $release->execute([$expiredQty,$productId]);
-            elseif(!in_array('sku',$cols['inventory'],true) && !($productId!==null && in_array('product_id',$cols['inventory'],true))) $release->execute([$expiredQty,(int)$expiredId]);
-            else $release->execute([$expiredQty]);
-          }
+          else throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED');
+          if(in_array('sku',$cols['inventory'],true)) $release->execute([$expiredQty]);
+          elseif($productId!==null && in_array('product_id',$cols['inventory'],true)) $release->execute([$expiredQty,$productId]);
         }
         $pdo->prepare("UPDATE orders SET payment_status='expired', status='expired' WHERE id=? AND payment_status='pending'")->execute([(int)$expiredId]);
       }
@@ -142,7 +139,7 @@ try {
         if($st && ($st['payment_status']??'')==='pending') {
           if(in_array('sku',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'"); $release->execute([$treeQty]); }
           elseif(isset($productId) && $productId!==null && in_array('product_id',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?"); $release->execute([$treeQty,$productId]); }
-          else { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE id=(SELECT inventory_id FROM orders WHERE id=?)"); $release->execute([$treeQty,$orderId]); }
+          else { throw new RuntimeException('INVENTORY_SCHEMA_UNSUPPORTED'); }
           $pdo->prepare("UPDATE orders SET payment_status='failed', status='failed' WHERE id=?")->execute([$orderId]);
         }
         $pdo->commit();

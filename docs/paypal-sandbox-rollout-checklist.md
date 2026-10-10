@@ -7,7 +7,7 @@
 - The sandbox checkout and the new create/capture endpoints are implemented on this branch; it is not deployed to production.
 - The create endpoint rejects malformed or unknown cart items, aggregates all single-item quantities for tier pricing, and limits request size.
 - Expired reservation cleanup is transactional and rechecks expiry after locking the order to reduce race conditions.
-- Capture reconciliation checks the PayPal status, amount, currency, local order reference, and order number. Concurrent retries that observe an already-paid order return success without deducting stock again.
+- Capture reconciliation checks the PayPal status, amount, currency, local order reference, and order number. Concurrent retries that observe an already-paid order return success without deducting stock again. If PayPal's exact completed capture is verified but local finalization fails, the API returns `PAYMENT_RECEIVED_RECONCILIATION_REQUIRED`; checkout explicitly tells the buyer not to pay again and preserves the cart while the order remains recoverable in `capturing`.
 - Syntax lint passing does not establish that the payment flow works against IONOS/PayPal Sandbox.
 
 ## Required implementation order
@@ -26,4 +26,4 @@
 - Sandbox mode only. Do not switch to live credentials or collect real payments during this phase.
 
 ## Important current risk
-The capture endpoint can leave an order in `capturing` after a network or database failure. This is intentionally not considered production-ready: reconcile the PayPal order/capture before allowing retry or finalizing inventory. Do not merge/deploy or accept real payments until the full sandbox scenarios have been exercised on IONOS.
+The capture endpoint can leave an order in `capturing` after a network or database failure. A verified PayPal capture is now distinguished from a failure before confirmation so checkout can warn the buyer not to pay again. The local inventory transaction must still be recovered by a safe retry or operator review if inventory invariants are broken. Do not merge/deploy or accept real payments until the full sandbox scenarios have been exercised on IONOS.

@@ -48,7 +48,13 @@ try {
   $captureStatus=(string)($capture['status']??'');
   $amount=$capture['amount']??[];
   $expected=number_format((float)($order['total']??0),2,'.','');
-  if($status!=='COMPLETED' || $captureStatus!=='COMPLETED' || ($amount['currency_code']??'')!=='EUR' || number_format((float)($amount['value']??0),2,'.','')!==$expected) {
+  $expectedReference=(string)($order['id']??'');
+  $expectedCustomId=(string)($order['order_number']??'');
+  if($status!=='COMPLETED' || $captureStatus!=='COMPLETED' ||
+     (string)($unit['reference_id']??'')!==$expectedReference ||
+     (string)($unit['custom_id']??'')!==$expectedCustomId ||
+     ($amount['currency_code']??'')!=='EUR' ||
+     number_format((float)($amount['value']??0),2,'.','')!==$expected) {
     // Keep the order in 'capturing' until a later request can safely reconcile it.
     jdxCaptureError('PAYMENT_NOT_CONFIRMED',402);
   }

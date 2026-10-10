@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // Vorlage für die PayPal-Konfiguration auf dem IONOS-Webspace.
 // NICHT als echte Konfiguration verwenden und niemals echte Secrets in GitHub speichern.
-// Auf dem Live-Webspace separat als api/paypal-config.php anlegen.
+// Auf IONOS in /public/api als paypal-config.php anlegen. Die api/.htaccess blockiert direkten Webzugriff.
 return [
     'mode' => 'sandbox',
     'client_id' => 'SANDBOX_CLIENT_ID_HIER_EINTRAGEN',

@@ -51,11 +51,17 @@ try {
         }
     }
     if($treeQty<1 || $treeQty>40) jdxJsonError('MAX_40_TREES');
+    // Aggregate normal singles so splitting them into multiple cart entries
+    // cannot bypass the quantity discount tiers.
+    $normalTotal=0;
+    foreach($items as $item) if(($item['mode']??'')==='normal') $normalTotal+=(int)$item['qty'];
     // Only after validating the entire cart do we calculate server-side prices.
-    $treeQty=0;
+    $treeQty=0; $normalAdded=false;
     foreach($items as $item) {
         if (($item['mode'] ?? '') === 'normal') {
-            $q=(int)($item['qty'] ?? 0); if($q<1 || $q>40) jdxJsonError('INVALID_QUANTITY');
+            if($normalAdded) continue;
+            $normalAdded=true;
+            $q=$normalTotal;
             $unit=$normalPrice($q); $line=$q===40?149.90:$q*$unit;
             $normalized[]=['type'=>'normal','code'=>'MYSTERY-DUFTBAUM','name'=>'MYSTERY DUFTBAUM','quantity'=>$q,'unit_price'=>$q===40?149.90/40:$unit,'line_total'=>$line,'tree_quantity'=>$q];
             $treeQty += $q; $subtotal += $line;

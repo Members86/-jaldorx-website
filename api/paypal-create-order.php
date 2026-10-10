@@ -119,7 +119,11 @@ try {
         'reference_id'=>(string)$orderId,'custom_id'=>$orderNumber,
         'description'=>'JALDORX Mystery Duftbaum Bestellung '.$orderNumber,
         'amount'=>['currency_code'=>'EUR','value'=>number_format($total,2,'.',''),
-          'breakdown'=>['item_total'=>['currency_code'=>'EUR','value'=>number_format($subtotal,2,'.','')],'shipping'=>['currency_code'=>'EUR','value'=>number_format($shipping,2,'.','')]]]
+          'breakdown'=>['item_total'=>['currency_code'=>'EUR','value'=>number_format($subtotal,2,'.','')],'shipping'=>['currency_code'=>'EUR','value'=>number_format($shipping,2,'.','')]]],
+        'shipping'=>[
+          'name'=>['full_name'=>$clean($customer['firstName'],100).' '.$clean($customer['lastName'],100)],
+          'address'=>['address_line_1'=>$clean($customer['street'],255),'admin_area_2'=>$clean($customer['city'],120),'postal_code'=>$clean($customer['postalCode'],20),'country_code'=>'DE']
+        ]
       ]],
       'application_context'=>['brand_name'=>'JALDORX','shipping_preference'=>'SET_PROVIDED_ADDRESS','user_action'=>'PAY_NOW','return_url'=>'https://jaldorx.de/checkout.html?paypal=return','cancel_url'=>'https://jaldorx.de/checkout.html?paypal=cancel']
     ]);

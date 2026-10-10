@@ -471,6 +471,7 @@ document.getElementById('add').onclick=()=>{if(selectedBoxCount()>0){warning.tex
 const boxInputs={two:document.getElementById('boxQtyTwo'),four:document.getElementById('boxQtyFour'),six:document.getElementById('boxQtySix'),nine:document.getElementById('boxQtyNine')};
 const boxOrder=['two','four','six','nine'];
 const boxSelection={two:0,four:0,six:0,nine:0};
+let boxLimitAttemptMessage='';
 function selectedBoxCount(){return boxOrder.reduce((s,k)=>s+boxSelection[k],0)}
 function updateBoxUI(){
   const count=selectedBoxCount(),normalQty=normalSelected?(parseInt(qty.value,10)||0):0,totalQty=count*10+normalQty,items=readItems();
@@ -487,7 +488,7 @@ function updateBoxUI(){
   document.getElementById('boxSelectionTotal').textContent=euro(sum);
   const overLimit=combinedQty>MAX;
   const warningText=overLimit?'Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+combinedQty+'. Maximal 40 Duftbäume pro Bestellung.':(cartBase>0?'Bereits im Warenkorb: '+cartBase+' Duftbäume.':'');
-  const boxWarningText=overLimit?'Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+combinedQty+'. Maximal 40 Duftbäume pro Bestellung.':(cartBase>0?'Bereits im Warenkorb: '+cartBase+' Duftbäume.':'');
+  const boxWarningText=boxLimitAttemptMessage||(overLimit?'Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+combinedQty+'. Maximal 40 Duftbäume pro Bestellung.':(cartBase>0?'Bereits im Warenkorb: '+cartBase+' Duftbäume.':''));
   const normalAddButton=document.getElementById('add');
   const setsSelected=count>0;
   normalAddButton.disabled=setsSelected;
@@ -503,8 +504,11 @@ function updateBoxUI(){
 }
 function setBoxQty(k,n){
   const current=selectedBoxCount(),without=current-boxSelection[k],normalQty=normalSelected?(parseInt(qty.value,10)||0):0,available=Math.max(0,Math.floor((MAX-cartQty()-normalQty)/10)-without);
+  const requested=Math.max(0,Math.floor(Number(n)||0));
   const max=Math.min(BOX_MAX,available);
-  boxSelection[k]=Math.max(0,Math.min(Math.floor(max),Number(n)||0));
+  const attemptedTotal=cartQty()+normalQty+(without+requested)*10;
+  if(requested>max){boxLimitAttemptMessage='Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+attemptedTotal+'. Maximal 40 Duftbäume pro Bestellung.';boxSelection[k]=Math.max(0,Math.min(Math.floor(max),requested));}
+  else {boxLimitAttemptMessage='';boxSelection[k]=requested;}
   updateBoxUI();render();
 }
 boxOrder.forEach(k=>{

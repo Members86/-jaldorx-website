@@ -1,0 +1,40 @@
+name: PayPal Sandbox PHP and Checkout Lint
+
+on:
+  push:
+    branches:
+      - paypal-sandbox-integration
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Lint PayPal PHP files
+        run: |
+          php -l api/paypal-client.php
+          php -l api/paypal-public-config.php
+          php -l api/paypal-create-order.php
+          php -l api/paypal-capture-order.php
+          php -l api/paypal-config.example.php
+      - name: Check checkout JavaScript syntax
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          html = Path("checkout.html").read_text()
+          scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', html, re.S | re.I)
+          if not scripts:
+              raise SystemExit("No inline script found in checkout.html")
+          Path("/tmp/jaldorx-checkout.js").write_text(scripts[-1])
+          PY
+          node --check /tmp/jaldorx-checkout.js

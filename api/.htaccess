@@ -1,0 +1,10 @@
+# Block direct web access to private configuration and PHP helper files.
+<Files "paypal-config.php">
+  Require all denied
+</Files>
+<Files "paypal-config.example.php">
+  Require all denied
+</Files>
+<Files "paypal-client.php">
+  Require all denied
+</Files>

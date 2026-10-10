@@ -186,8 +186,8 @@ try {
         $pdo->beginTransaction();
         $q=$pdo->prepare("SELECT payment_status FROM orders WHERE id=? FOR UPDATE"); $q->execute([$orderId]); $st=$q->fetch(PDO::FETCH_ASSOC);
         if($st && ($st['payment_status']??'')==='pending') {
-          if(in_array('sku',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE sku='MYSTERY-DUFTBAUM'"); $release->execute([$treeQty]); }
-          elseif(isset($productId) && $productId!==null && in_array('product_id',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=GREATEST(0,reserved-?) WHERE product_id=?"); $release->execute([$treeQty,$productId]); }
+          if(in_array('sku',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=reserved-? WHERE sku='MYSTERY-DUFTBAUM' AND reserved>=?"); $release->execute([$treeQty,$treeQty]); }
+          elseif(isset($productId) && $productId!==null && in_array('product_id',$cols['inventory']??[],true)) { $release=$pdo->prepare("UPDATE inventory SET reserved=reserved-? WHERE product_id=? AND reserved>=?"); $release->execute([$treeQty,$productId,$treeQty]); }
           else {
             // Same id-based fallback as the reservation path above. Release only
             // the exact row and only when enough quantity is still reserved.

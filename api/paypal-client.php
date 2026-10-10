@@ -48,6 +48,16 @@ function jdxPayPalConfig(): array
  */
 function jdxPayPalRequest(string $method, string $path, ?array $payload = null): array
 {
+    $method = strtoupper(trim($method));
+    if (!in_array($method, ['GET', 'POST'], true)) {
+        throw new RuntimeException('PAYPAL_METHOD_INVALID');
+    }
+    if (!preg_match('#^/v2/checkout/orders(?:/[A-Za-z0-9-]+(?:/(?:capture|authorize))?)?$#', $path)) {
+        throw new RuntimeException('PAYPAL_PATH_INVALID');
+    }
+    if ($method === 'GET' && $payload !== null) {
+        throw new RuntimeException('PAYPAL_PAYLOAD_INVALID');
+    }
     if (!function_exists('curl_init')) {
         throw new RuntimeException('PAYPAL_CURL_UNAVAILABLE');
     }
@@ -78,10 +88,6 @@ function jdxPayPalRequest(string $method, string $path, ?array $payload = null):
     $accessToken = is_array($tokenData) ? (string)($tokenData['access_token'] ?? '') : '';
     if ($accessToken === '') {
         throw new RuntimeException('PAYPAL_AUTH_FAILED');
-    }
-
-    if (!preg_match('#^/v2/checkout/orders(?:/[A-Za-z0-9-]+(?:/(?:capture|authorize))?)?$#', $path)) {
-        throw new RuntimeException('PAYPAL_PATH_INVALID');
     }
 
     $url = $config['base_url'] . $path;

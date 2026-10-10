@@ -437,7 +437,13 @@ const euro=n=>Number(n).toLocaleString('de-DE',{style:'currency',currency:'EUR'}
 function getItems(){
   try{
     const c=JSON.parse(localStorage.getItem('jaldorxCart')||'{}');
-    if(Array.isArray(c.items))return c.items.filter(i=>i&&((i.mode==='normal')||(i.mode==='box'&&Object.prototype.hasOwnProperty.call(boxes,i.boxType))));
+    if(Array.isArray(c.items)){
+      const valid=c.items.filter(i=>i&&((i.mode==='normal')||(i.mode==='box'&&Object.prototype.hasOwnProperty.call(boxes,i.boxType))));
+      const singles=valid.filter(i=>i.mode==='normal').reduce((sum,i)=>sum+Math.max(0,Number(i.qty||0)),0);
+      const normalized=valid.filter(i=>i.mode==='box');
+      if(singles>0)normalized.unshift({mode:'normal',qty:singles});
+      return normalized;
+    }
     const m=c.mystery||{};
     return m.mode==='box'&&m.boxType?[{mode:'box',boxType:m.boxType,boxQty:Math.max(1,Math.min(BOX_MAX,Number(m.boxQty||1)))}]:
       Number(m.qty||0)>0?[{mode:'normal',qty:Math.max(1,Math.min(MAX,Number(m.qty||0)))}]:[];

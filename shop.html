@@ -509,7 +509,18 @@ function setBoxQty(k,n){
   const attemptedTotal=cartQty()+normalQty+(without+requested)*10;
   if(requested>max){boxLimitAttemptMessage='Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+attemptedTotal+'. Maximal 40 Duftbäume pro Bestellung.';boxSelection[k]=Math.max(0,Math.min(Math.floor(max),requested));}
   else {boxLimitAttemptMessage='';boxSelection[k]=requested;}
-  updateBoxUI();render();
+  render();
+  updateBoxUI();
+  // Die Warnung für einen abgewiesenen Set-Versuch direkt nach beiden UI-Updates absichern.
+  // Beispiel: 30 im Warenkorb + Versuch, 2 Sets zu wählen = Warnung mit 50.
+  if(boxLimitAttemptMessage){
+    const boxWarning=document.getElementById('boxWarning');
+    if(boxWarning){
+      boxWarning.textContent=boxLimitAttemptMessage;
+      boxWarning.style.display='block';
+      boxWarning.style.color='#ff8b8b';
+    }
+  }
 }
 boxOrder.forEach(k=>{
   document.querySelector('[data-box-minus="'+k+'"]').onclick=e=>{e.stopPropagation();setBoxQty(k,boxSelection[k]-1)};

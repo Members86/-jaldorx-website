@@ -29,4 +29,4 @@ jobs:
           test -n "$SSHPASS"
           mkdir -p "$HOME/.ssh"
           ssh-keyscan -p "$IONOS_PORT" "$IONOS_HOST" >> "$HOME/.ssh/known_hosts"
-          sshpass -e ssh             -p "$IONOS_PORT"             -o BatchMode=no             -o PreferredAuthentications=password,keyboard-interactive             -o PubkeyAuthentication=no             -o ConnectTimeout=15             "$IONOS_USERNAME@$IONOS_HOST"             'printf "IONOS_SSH_LOGIN_OK\n"; pwd'
+          sshpass -e ssh             -p "$IONOS_PORT"             -o BatchMode=no             -o PreferredAuthentications=password,keyboard-interactive -o HostKeyAlgorithms=+ssh-rsa             -o PubkeyAuthentication=no             -o ConnectTimeout=15             "$IONOS_USERNAME@$IONOS_HOST"             'printf "IONOS_SSH_LOGIN_OK\n"; pwd'

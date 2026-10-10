@@ -466,7 +466,7 @@ function render(){let q=parseInt(qty.value,10);if(!Number.isFinite(q)||q<0)q=0;q
 qty.addEventListener('input',()=>{let raw=qty.value.replace(/[^0-9]/g,'');if(raw===''){normalSelected=false;render();updateBoxUI();return}let n=parseInt(raw,10);const available=Math.max(0,MAX-cartQty()-selectedBoxCount()*10);if(n>available){n=available;warning.textContent='Maximal '+available+' normale Duftbäume zusätzlich möglich. Warenkorb und Sets zählen mit.'}qty.value=n;normalSelected=n>0;render();updateBoxUI()});
 document.getElementById('minus').onclick=()=>{let q=parseInt(qty.value,10)||0;q=Math.max(0,q-1);normalSelected=q>0;qty.value=q;render();updateBoxUI()};
 document.getElementById('plus').onclick=()=>{const n=(parseInt(qty.value,10)||0)+1,available=Math.max(0,MAX-cartQty()-selectedBoxCount()*10);if(n>available){warning.textContent='Maximal '+available+' normale Duftbäume zusätzlich möglich. Warenkorb und Sets zählen mit.';return}normalSelected=true;qty.value=n;render();updateBoxUI()};
-document.getElementById('add').onclick=()=>{const q=parseInt(qty.value,10)||0,items=readItems(),current=cartQty(items);if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}if(current+q>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Bereits im Warenkorb: '+current+'.';return}const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=Number(existing.qty||0)+q;else items.unshift({mode:'normal',qty:q});saveItems(items);document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum hinzugefügt · ${euro(total(q))}`;document.getElementById('mini').classList.add('open')};
+document.getElementById('add').onclick=()=>{if(selectedBoxCount()>0){warning.textContent='Du hast 10er-Sets ausgewählt. Nutze unten „ALLE AUSGEWÄHLTEN IN DEN WARENKORB“, damit normale Duftbäume und Sets gemeinsam hinzugefügt werden.';return}const q=parseInt(qty.value,10)||0,items=readItems(),current=cartQty(items);if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}if(current+q>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Bereits im Warenkorb: '+current+'.';return}const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=Number(existing.qty||0)+q;else items.unshift({mode:'normal',qty:q});saveItems(items);document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum hinzugefügt · ${euro(total(q))}`;document.getElementById('mini').classList.add('open')};
 
 const boxInputs={two:document.getElementById('boxQtyTwo'),four:document.getElementById('boxQtyFour'),six:document.getElementById('boxQtySix'),nine:document.getElementById('boxQtyNine')};
 const boxOrder=['two','four','six','nine'];
@@ -486,6 +486,12 @@ function updateBoxUI(){
   let sum=normalSelected&&normalQty>0?total(normalQty):0;boxOrder.forEach(k=>sum+=boxSelection[k]*boxes[k].price);
   document.getElementById('boxSelectionTotal').textContent=euro(sum);
   const overLimit=combinedQty>MAX;
+  const normalAddButton=document.getElementById('add');
+  const setsSelected=count>0;
+  normalAddButton.disabled=setsSelected;
+  normalAddButton.title=setsSelected?'Bitte unten alle ausgewählten Artikel gemeinsam in den Warenkorb legen.':'';
+  normalAddButton.style.opacity=setsSelected?'.45':'';
+  normalAddButton.style.cursor=setsSelected?'not-allowed':'';
   warning.textContent=overLimit?'Zu viele Duftbäume: Im Warenkorb und in deiner Auswahl wären es '+combinedQty+'. Maximal 40 pro Bestellung.':(cartQty(items)>0?'Bereits im Warenkorb: '+cartQty(items)+' Duftbäume.':'');
   document.getElementById('addBox').disabled=(count===0&&!(normalSelected&&normalQty>0))||overLimit;
   const availableSets=Math.max(0,Math.floor((MAX-cartBase-normalQty)/10));

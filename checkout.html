@@ -408,9 +408,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="field"><label>PLZ *<input required inputmode="numeric" autocomplete="postal-code"></label></div><div class="field"><label>Ort *<input required autocomplete="address-level2"></label></div>
 <div class="field full"><label>Land<select><option>Deutschland</option></select></label></div>
 <div class="field full"><label>E-Mail-Adresse *<input type="email" required autocomplete="email"></label></div></div>
-<h2 style="margin-top:40px">Zahlungsart</h2><div class="payment">
-<label><input type="radio" name="payment" checked> PayPal</label><label><input type="radio" name="payment"> Kredit-/Debitkarte</label><label><input type="radio" name="payment"> Apple Pay</label><label><input type="radio" name="payment"> Google Pay</label></div>
-<label class="checkout-consent"><input type="checkbox" required> Ich akzeptiere die <a class="accent" href="agb.html" target="_blank" rel="noopener">AGB</a> und habe das <a class="accent" href="widerruf.html" target="_blank" rel="noopener">Widerrufsrecht</a> zur Kenntnis genommen.</label><p class="note">Hinweis: Der Checkout befindet sich aktuell im Testbetrieb. Es wird derzeit keine echte Zahlung ausgelöst.</p><div class="error" id="error"></div><button class="btn primary" type="submit">TESTBESTELLUNG ABSENDEN</button></form><br><a class="muted" href="warenkorb.html">← Zurück zum Warenkorb</a></section>
+<h2 style="margin-top:40px">Zahlung mit PayPal</h2>
+<label class="checkout-consent"><input type="checkbox" required> Ich akzeptiere die <a class="accent" href="agb.html" target="_blank" rel="noopener">AGB</a> und habe das <a class="accent" href="widerruf.html" target="_blank" rel="noopener">Widerrufsrecht</a> zur Kenntnis genommen.</label>
+<p class="note">Sandbox-Test: Es wird kein echtes Geld abgebucht. Bitte ausschließlich mit einem PayPal-Sandbox-Testkonto bezahlen.</p>
+<div class="error" id="error"></div><div id="paypal-button-container"></div><p class="note" id="paypal-status">PayPal-Testzahlung wird vorbereitet …</p></form><br><a class="muted" href="warenkorb.html">← Zurück zum Warenkorb</a></section>
 <aside class="card"><h2>Bestellübersicht</h2><div id="summary"></div></aside></div></div><div id="success" class="card success"><div class="success-mark">✓</div><h2>Bestellung erfasst</h2><p id="successText" class="muted"></p><a class="btn primary" href="index.html">ZUR STARTSEITE</a></div></div></main>
 <footer class="footer"><div class="wrap jdx-footer-grid">
 <div class="jdx-footer-brand"><strong>JALDOR<b style="color:#e5232e">X</b></strong><span>MYSTERY. SURPRISE. JALDORX.</span></div>
@@ -467,54 +468,74 @@ function render(){
   });
   const ship=shipping(q,sub),grand=sub+ship,free=ship===0;
   document.getElementById('summary').innerHTML=detail+'<hr style="border-color:#ffffff12"><p>Warenwert: '+euro(sub)+'</p><p>Versand: '+(free?'Kostenlos ab 99 €':euro(ship))+'</p><div class="cart-total"><span>Gesamt</span><span>'+euro(grand)+'</span></div>';
-  document.getElementById('checkout-form').onsubmit=async e=>{
-    e.preventDefault();
-    const form=e.currentTarget;
-    const errorEl=document.getElementById('error');
-    errorEl.textContent='';
-    if(!form.checkValidity()){form.reportValidity();return}
-
-    const inputs=form.querySelectorAll('input');
-    const firstName=inputs[0]?.value.trim()||'';
-    const lastName=inputs[1]?.value.trim()||'';
-    const street=inputs[2]?.value.trim()||'';
-    const postalCode=inputs[3]?.value.trim()||'';
-    const city=inputs[4]?.value.trim()||'';
-    const email=inputs[5]?.value.trim()||'';
-    const payment=document.querySelector('input[name="payment"]:checked')?.parentElement?.textContent.trim()||'test';
-
-    const submit=form.querySelector('button[type="submit"]');
-    submit.disabled=true;
-    submit.textContent='BESTELLUNG WIRD GESPEICHERT …';
-
+  const form=document.getElementById('checkout-form');
+  const errorEl=document.getElementById('error');
+  const statusEl=document.getElementById('paypal-status');
+  const buttonContainer=document.getElementById('paypal-button-container');
+  form.addEventListener('submit',e=>e.preventDefault());
+  const formData=()=>{
+    const fields=form.querySelector('.fields').querySelectorAll('input');
+    return {firstName:fields[0].value.trim(),lastName:fields[1].value.trim(),street:fields[2].value.trim(),postalCode:fields[3].value.trim(),city:fields[4].value.trim(),email:fields[5].value.trim()};
+  };
+  const setError=message=>{errorEl.textContent=message||'';};
+  const setStatus=message=>{if(statusEl)statusEl.textContent=message||'';};
+  const loadPayPal=async()=>{
     try{
-      const response=await fetch('api/order.php',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          customer:{firstName,lastName,street,postalCode,city,email},
-          paymentMethod:payment,
-          items
-        })
-      });
-      const result=await response.json().catch(()=>null);
-      if(!response.ok || !result || !result.ok){
-        if(result?.error==='INSUFFICIENT_STOCK'){
-          throw new Error('Leider sind aktuell nur '+Number(result.available||0)+' Duftbäume auf Lager.');
-        }
-        throw new Error('Die Bestellung konnte momentan nicht gespeichert werden. Bitte versuche es erneut.');
+      const cfgResponse=await fetch('api/paypal-public-config.php',{cache:'no-store'});
+      const cfg=await cfgResponse.json();
+      if(!cfgResponse.ok||!cfg.ok||!cfg.clientId) throw new Error('PAYPAL_NOT_CONFIGURED');
+      if(!window.paypal){
+        await new Promise((resolve,reject)=>{
+          const script=document.createElement('script');
+          script.src='https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(cfg.clientId)+'&currency=EUR&intent=capture';
+          script.onload=resolve;script.onerror=()=>reject(new Error('PAYPAL_SDK_LOAD_FAILED'));
+          document.head.appendChild(script);
+        });
       }
-
-      clearCart();
-      document.getElementById('checkout-content').style.display='none';
-      document.getElementById('success').classList.add('open');
-      document.getElementById('successText').textContent=`Deine Bestellnummer ist ${result.orderNumber}. Die Bestellung wurde erfasst. Gesamt: ${euro(result.total)}.`;
+      if(!window.paypal||!window.paypal.Buttons) throw new Error('PAYPAL_SDK_UNAVAILABLE');
+      buttonContainer.innerHTML='';
+      window.paypal.Buttons({
+        style:{layout:'vertical',shape:'rect',label:'paypal'},
+        createOrder:async()=>{
+          setError('');
+          if(!form.checkValidity()){form.reportValidity();throw new Error('Bitte fülle alle Pflichtfelder aus und akzeptiere die AGB.');}
+          const response=await fetch('api/paypal-create-order.php',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({customer:formData(),items})
+          });
+          const result=await response.json().catch(()=>null);
+          if(!response.ok||!result||!result.ok||!result.orderID){
+            if(result?.error==='INSUFFICIENT_STOCK') throw new Error('Nicht genügend Lagerbestand für diese Bestellung.');
+            if(result?.error==='PAYPAL_NOT_CONFIGURED') throw new Error('PayPal Sandbox ist noch nicht konfiguriert.');
+            throw new Error('Die PayPal-Bestellung konnte nicht vorbereitet werden. Bitte später erneut versuchen.');
+          }
+          return result.orderID;
+        },
+        onApprove:async(data)=>{
+          setError('');
+          setStatus('PayPal-Zahlung wird bestätigt …');
+          const response=await fetch('api/paypal-capture-order.php',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({orderID:data.orderID})
+          });
+          const result=await response.json().catch(()=>null);
+          if(!response.ok||!result||!result.ok) throw new Error('Die Zahlung konnte nicht bestätigt werden. Bitte nicht erneut bezahlen und kontaktiere den Shop, falls PayPal die Zahlung als abgeschlossen anzeigt.');
+          clearCart();
+          document.getElementById('checkout-content').style.display='none';
+          document.getElementById('success').classList.add('open');
+          document.getElementById('successText').textContent='Bestellnummer '+result.orderNumber+'. Sandbox-Zahlung bestätigt. Gesamt: '+euro(Number(result.total||grand)) +'.';
+        },
+        onCancel:()=>{setStatus('Zahlung abgebrochen. Die Reservierung läuft nach 30 Minuten ab. Du kannst es erneut versuchen.');},
+        onError:err=>{console.error('PayPal Sandbox error',err);setError(err&&err.message?err.message:'PayPal ist momentan nicht verfügbar. Bitte versuche es erneut.');setStatus('PayPal-Testzahlung konnte nicht abgeschlossen werden.');}
+      }).render('#paypal-button-container');
+      setStatus('Sandbox bereit – keine echte Zahlung.');
     }catch(err){
-      errorEl.textContent=err.message||'Die Bestellung konnte momentan nicht gespeichert werden.';
-      submit.disabled=false;
-      submit.textContent='TESTBESTELLUNG ABSENDEN';
+      console.error('PayPal Sandbox setup error',err);
+      setStatus('PayPal ist noch nicht vollständig eingerichtet.');
+      setError('PayPal-Testzahlung ist noch nicht bereit. Die Live-Website bleibt unverändert, bis die Einrichtung abgeschlossen ist.');
     }
   };
+  loadPayPal();
 }
 document.addEventListener('DOMContentLoaded',render);
 

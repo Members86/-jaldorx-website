@@ -109,7 +109,7 @@ try {
 <p>Stück auf Lager · Reserviert: <strong><?php echo $reserved; ?></strong> · Verfügbar: <strong><?php echo max(0, $stock - $reserved); ?></strong></p>
 <form class="stockform" method="post">
 <label for="stock">Neuen Bestand eingeben</label>
-<input id="stock" type="number" name="stock" min="0" value="<?php echo $stock; ?>" required>
+<input id="stock" type="number" name="stock" min="0" value="0" required>
 <button class="save" type="submit">BESTAND SPEICHERN</button>
 </form>
 <?php if ($message !== '') echo '<div class="ok">' . jdx_h($message) . '</div>'; ?>

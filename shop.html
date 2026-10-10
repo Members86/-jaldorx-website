@@ -462,10 +462,10 @@ function saveItems(items){const clean=items.filter(i=>itemQty(i)>0),q=cartQty(cl
 function updateCounts(q=cartQty()){document.querySelectorAll('.cart-count').forEach(e=>e.textContent=q)}
 const qty=document.getElementById('qty'),warning=document.getElementById('warning'),discountBox=document.getElementById('discountBox');
 let normalSelected=false;
-function render(){let q=parseInt(qty.value,10);if(!Number.isFinite(q)||q<0)q=0;q=Math.min(MAX,q);qty.value=q;warning.textContent='';document.getElementById('unitPrice').textContent=euro(q>0?unit(q):BASE)+' / Stück';document.getElementById('normalTotal').textContent=euro(q>0?total(q):0);const normal=q*BASE,saveAmt=normal-total(q);discountBox.innerHTML=q===40?'<strong>40 Stück: 149,90 € gesamt</strong><br><span class="muted">Maximaler Online-Rabatt erreicht.</span>':`Mengenpreis: <strong>${euro(unit(q))}</strong> pro Stück${saveAmt>0?`<br><span class="muted">Du sparst ${euro(saveAmt)} gegenüber dem Einzelpreis.</span>`:''}`}
-qty.addEventListener('input',()=>{let raw=qty.value.replace(/[^0-9]/g,'');if(raw===''){normalSelected=false;render();updateBoxUI();warning.textContent='';return}let n=parseInt(raw,10);if(n>MAX){warning.textContent='Maximal 40 Stück pro Bestellung.';n=MAX}qty.value=n;normalSelected=n>0;render();updateBoxUI()});
+function render(){let q=parseInt(qty.value,10);if(!Number.isFinite(q)||q<0)q=0;q=Math.min(MAX,q);qty.value=q;const cartCount=cartQty(),otherSelected=selectedBoxCount()*10,available=Math.max(0,MAX-cartCount-otherSelected);warning.textContent=(cartCount+q+otherSelected>MAX)?'Zu viele Duftbäume: maximal '+available+' normale Stück zusätzlich möglich.':'';document.getElementById('unitPrice').textContent=euro(q>0?unit(q):BASE)+' / Stück';document.getElementById('normalTotal').textContent=euro(q>0?total(q):0);const normal=q*BASE,saveAmt=normal-total(q);discountBox.innerHTML=q===40?'<strong>40 Stück: 149,90 € gesamt</strong><br><span class="muted">Maximaler Online-Rabatt erreicht.</span>':`Mengenpreis: <strong>${euro(unit(q))}</strong> pro Stück${saveAmt>0?`<br><span class="muted">Du sparst ${euro(saveAmt)} gegenüber dem Einzelpreis.</span>`:''}`}
+qty.addEventListener('input',()=>{let raw=qty.value.replace(/[^0-9]/g,'');if(raw===''){normalSelected=false;render();updateBoxUI();return}let n=parseInt(raw,10);const available=Math.max(0,MAX-cartQty()-selectedBoxCount()*10);if(n>available){n=available;warning.textContent='Maximal '+available+' normale Duftbäume zusätzlich möglich. Warenkorb und Sets zählen mit.'}qty.value=n;normalSelected=n>0;render();updateBoxUI()});
 document.getElementById('minus').onclick=()=>{let q=parseInt(qty.value,10)||0;q=Math.max(0,q-1);normalSelected=q>0;qty.value=q;render();updateBoxUI()};
-document.getElementById('plus').onclick=()=>{normalSelected=true;let n=(parseInt(qty.value,10)||0)+1;const current=cartQty();if(current+n>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Bereits im Warenkorb: '+current+'.';return}qty.value=n;render();updateBoxUI()};
+document.getElementById('plus').onclick=()=>{const n=(parseInt(qty.value,10)||0)+1,available=Math.max(0,MAX-cartQty()-selectedBoxCount()*10);if(n>available){warning.textContent='Maximal '+available+' normale Duftbäume zusätzlich möglich. Warenkorb und Sets zählen mit.';return}normalSelected=true;qty.value=n;render();updateBoxUI()};
 document.getElementById('add').onclick=()=>{const q=parseInt(qty.value,10)||0,items=readItems(),current=cartQty(items);if(q<1||q>MAX){warning.textContent='Bitte 1 bis 40 Stück auswählen.';return}if(current+q>MAX){warning.textContent='Maximal 40 Duftbäume pro Bestellung. Bereits im Warenkorb: '+current+'.';return}const existing=items.find(i=>i.mode==='normal');if(existing)existing.qty=Number(existing.qty||0)+q;else items.unshift({mode:'normal',qty:q});saveItems(items);document.getElementById('miniText').textContent=`${q} × Mystery Duftbaum hinzugefügt · ${euro(total(q))}`;document.getElementById('mini').classList.add('open')};
 
 const boxInputs={two:document.getElementById('boxQtyTwo'),four:document.getElementById('boxQtyFour'),six:document.getElementById('boxQtySix'),nine:document.getElementById('boxQtyNine')};
@@ -492,12 +492,10 @@ function updateBoxUI(){
   boxOrder.forEach(k=>{boxInputs[k].value=boxSelection[k];boxInputs[k].setAttribute('aria-valuemax',String(Math.max(boxSelection[k],Math.min(BOX_MAX,boxSelection[k]+Math.max(0,availableSets-count)))));document.querySelector('.jdx-box-option[data-box="'+k+'"]').classList.toggle('active',boxSelection[k]>0)});
 }
 function setBoxQty(k,n){
-  const current=selectedBoxCount(),without=current-boxSelection[k],items=readItems();
-  const normalQty=normalSelected?(parseInt(qty.value,10)||0):0;
-  const cartBase=cartQty(items);
-  const max=Math.max(0,Math.min(BOX_MAX,Math.floor((MAX-cartBase-normalQty)/10)-without));
+  const current=selectedBoxCount(),without=current-boxSelection[k],normalQty=normalSelected?(parseInt(qty.value,10)||0):0,available=Math.max(0,Math.floor((MAX-cartQty()-normalQty)/10)-without);
+  const max=Math.min(BOX_MAX,available);
   boxSelection[k]=Math.max(0,Math.min(Math.floor(max),Number(n)||0));
-  updateBoxUI();
+  updateBoxUI();render();
 }
 boxOrder.forEach(k=>{
   document.querySelector('[data-box-minus="'+k+'"]').onclick=e=>{e.stopPropagation();setBoxQty(k,boxSelection[k]-1)};
